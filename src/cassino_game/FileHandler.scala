@@ -1,3 +1,5 @@
+package cassino_game
+
 import java.io._
 import scala.collection.mutable.Buffer
 
