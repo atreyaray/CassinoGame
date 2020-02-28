@@ -1,6 +1,5 @@
 
 
-object Game extends App{
-  print("Hello")
-  print("Check changes")
+object Game extends App {
+ println("Hello")
 }
