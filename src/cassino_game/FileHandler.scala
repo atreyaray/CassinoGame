@@ -5,13 +5,13 @@ import scala.collection.mutable.Buffer
 
 class FileHandler {
   
-  def readFile (textFile : String) = {
+  def readFile (textFile : String) : Buffer[Buffer[String]]= {
     
     val fileReader = new FileReader(textFile)
     val bufferedReader = new BufferedReader(fileReader)
+    var blocks = Buffer[Buffer[String]]()
     
     try{
-        var blocks = Buffer[Buffer[String]]()
         var readLine = bufferedReader.readLine()
         while (readLine != null){
           
@@ -23,7 +23,7 @@ class FileHandler {
               readLine = bufferedReader.readLine()
             }
           }
-          
+         blocks += block  
           readLine = bufferedReader.readLine()
         }
     }catch{
@@ -32,6 +32,6 @@ class FileHandler {
       fileReader.close()
       bufferedReader.close()
     }
-    
+    blocks
   }
 }

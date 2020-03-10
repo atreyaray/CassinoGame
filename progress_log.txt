@@ -1,0 +1,9 @@
+Created the eclipse project for my game. Synced project with GitLab. Imported Swing and ScalaTest libraries to allow GUI and testing functionality. Created skeleton classes for all the classes from the technical plan. Created a basic testing class to test the FileHandler class.
+
+Currently the testing is not properly implemented, however a basic testing class does exist.
+
+NullPointerException is observed in the testing class but it has not been resolved yet.
+
+Workload till now has been around 5 hours for initial set up and creating skeleton classes.
+
+Creation of the major classes is not finished yet so I am currently lagging behind.
