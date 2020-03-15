@@ -11,4 +11,5 @@ class Player (givenName : String){
   def capture (cards : Vector[Card]) = capturedCards = capturedCards ++ cards
   def playCard (card : Card) = cardsInHand = cardsInHand.filter(_.name != card.name)
   def deal(card : Card) = cardsInHand = cardsInHand :+ card
+  
 }
