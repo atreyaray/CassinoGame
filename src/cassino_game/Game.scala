@@ -34,7 +34,10 @@ object Game extends App {
     if (cards.length == 52) {
       val initialHands = cards.take(players.length*4).grouped(4).toVector
       cards = cards.drop(players.length*4)
+      val initialTableHand  = cards.take(4)
+      cards = cards.drop(4)
       for (i <- 0 until initialHands.length) players(i).deal(initialHands(i))
+      this.cardsOnTable = this.cardsOnTable ++ initialTableHand
     }
   }
  
@@ -52,6 +55,12 @@ object Game extends App {
     lastCapturer = Some(p1)
   }
   
+  override def toString() = {
+    var ans = ""
+    for(i <- 0 until players.length) ans = ans + players(i).toString() + "\n"
+    ans + "Cards on table " + this.cardsOnTable.map(_.toString()) + "\n" + "Cards remaining on table " + this.cards.length + "\n" 
+  }
+  
   
 // var count = 0
 // for (i<- 0 until 52) {
@@ -59,12 +68,16 @@ object Game extends App {
 //   println(deck.distinct.length)
 //   if ((i+1) % 13 == 0) println(" ")
 //   print(cards(i) + " ")
+  
 //   count += 1
 // }
   
   
 //  this.addPlayers(Vector("Atreya","Long","Aayush","Sergey","Dean"))
-//  for (i <- 0 until players.length) println(players(i))
+//  shuffle
+//  deal
+  //for (i <- 0 until players.length) println(players(i))
+  print(this)
   
   
 }

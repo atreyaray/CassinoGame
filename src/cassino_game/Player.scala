@@ -13,5 +13,5 @@ class Player (givenName : String){
   def deal(cards : Vector[Card]) = cardsInHand = cardsInHand ++ cards
   
   
-  override def toString() = "Player " + name
+  override def toString() = "Player " + name + " with cards " + cardsInHand
 }
