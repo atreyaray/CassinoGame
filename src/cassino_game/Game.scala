@@ -77,7 +77,7 @@ object Game extends App {
 //  shuffle
 //  deal
   //for (i <- 0 until players.length) println(players(i))
-  print(this)
+ // print(this)
   
   
 }
