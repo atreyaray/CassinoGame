@@ -48,11 +48,33 @@ object Game extends App {
   }
  
   def executeMove (p1: Player, playerCard : Card, combo : Vector[Card]) ={
+    //Specifically in the case of a sweep
+    if (combo.length == this.cardsOnTable.length ) p1.addPoints(1)
     val combinedCombo = combo :+ playerCard
     p1.capture(combinedCombo)
     p1.playCard(playerCard)
     for (i <- 0 until combinedCombo.length ) this.cardsOnTable = this.cardsOnTable.filter(_.name != combo(i).name)
     lastCapturer = Some(p1)
+  }
+  
+  //NOTE Have to check for behaviour of maxBy in '0' cases
+  def calculatePoints = {
+    
+    val maxCards = players.zip(players.map(_.capturedCards.length)).maxBy(_._2)
+    maxCards._1.addPoints(1)
+    
+    val maxSpades = players.zip(players.map(_.capturedCards.filter(_.suit =="s").length)).maxBy(_._2)
+    maxSpades._1.addPoints(1)
+    
+    val aces = players.zip(players.map(_.capturedCards.filter(_.value == 1).length))
+    aces.foreach(n => n._1.addPoints(n._2))
+    
+    val d10 = players.zip(players.map(_.capturedCards.filter(_.name == "d10").isEmpty)).filter(_._2 == false)
+    if(!d10.isEmpty) d10(0)._1.addPoints(2)
+    
+    val s2 = players.zip(players.map(_.capturedCards.filter(_.name == "s2").isEmpty)).filter(_._2 == false)
+    if(!s2.isEmpty) s2(0)._1.addPoints(1)
+    
   }
   
   override def toString() = {
