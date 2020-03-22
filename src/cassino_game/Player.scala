@@ -10,6 +10,8 @@ class Player (givenName : String){
   def addPoints (addition : Int) = points += addition
   def capture (cards : Vector[Card]) = capturedCards = capturedCards ++ cards
   def playCard (card : Card) = cardsInHand = cardsInHand.filter(_.name != card.name)
-  def deal(card : Card) = cardsInHand = cardsInHand :+ card
+  def deal(cards : Vector[Card]) = cardsInHand = cardsInHand ++ cards
   
+  
+  override def toString() = "Player " + name
 }
