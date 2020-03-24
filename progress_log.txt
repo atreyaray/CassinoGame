@@ -1,3 +1,5 @@
+10.3.2020
+
 Created the eclipse project for my game. Synced project with GitLab. Imported Swing and ScalaTest libraries to allow GUI and testing functionality. Created skeleton classes for all the classes from the technical plan. Created a basic testing class to test the FileHandler class.
 
 Currently the testing is not properly implemented, however a basic testing class does exist.
@@ -7,3 +9,25 @@ NullPointerException is observed in the testing class but it has not been resolv
 Workload till now has been around 5 hours for initial set up and creating skeleton classes.
 
 Creation of the major classes is not finished yet so I am currently lagging behind.
+
+24.3.2020
+
+Added methods
+1. addPoints
+2. capture
+3. playCard
+4. deal
+
+Added specialValues to different cards in Card class
+Added 'deck' variable containing names of all the Cards in the deck.
+Added checkMove and executeMove methods in Game class
+Edited Game toString() method to show state variables: players, cards on
+table, cards remaining etc.
+Added functionality to deal method where it also gives 4 cards to the
+cardsOnTable variable at the beginning of the game
+Added the method calculatePoints in the game class
+
+Rough workload has been 15-20 hours
+
+I am slightly behind on the implementation of the textUI and optimalMove method.
+
