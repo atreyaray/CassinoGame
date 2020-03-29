@@ -25,7 +25,7 @@ object Game extends App {
   // Adds new players 
   // ##Need to check if  no. of players is acceptable
   def addPlayers (names : Vector[String]) = {
-    for (i <- 0 until names.length) players = players :+ new Player(names(i))
+    for (i <-  names) players = players :+ new Player(i)
   }
   
   //deals new cards
@@ -77,6 +77,8 @@ object Game extends App {
     
   }
   
+  def winner = players.zip(this.players.map(_.points)).maxBy(_._2)._1
+  
   override def toString() = {
     var ans = ""
     for(i <- 0 until players.length) ans = ans + players(i).toString() + "\n"
@@ -98,8 +100,11 @@ object Game extends App {
 //  this.addPlayers(Vector("Atreya","Long","Aayush","Sergey","Dean"))
 //  shuffle
 //  deal
-  //for (i <- 0 until players.length) println(players(i))
- // print(this)
+//  for (i <- 0 until players.length) println(players(i))
+//  print(this)
+//  while (!isWon){
+//    
+//  }
   
   
 }
