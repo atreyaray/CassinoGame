@@ -41,13 +41,13 @@ object Game extends App {
     }
   }
  
-  def checkMove (p1 : Player, playerCard : Card, combo : Vector[Card]) : Boolean = {
+  def checkCapture (p1 : Player, playerCard : Card, combo : Vector[Card]) : Boolean = {
     val comboVal = combo.map(_.value).reduceLeft((n,sum) => n+sum)
     val playerVal = playerCard.specialValue.getOrElse(playerCard.value)
     (comboVal % playerVal == 0)
   }
  
-  def executeMove (p1: Player, playerCard : Card, combo : Vector[Card]) ={
+  def executeCapture (p1: Player, playerCard : Card, combo : Vector[Card]) ={
     //Specifically in the case of a sweep
     if (combo.length == this.cardsOnTable.length ) p1.addPoints(1)
     val combinedCombo = combo :+ playerCard
@@ -55,6 +55,11 @@ object Game extends App {
     p1.playCard(playerCard)
     for (i <- 0 until combinedCombo.length ) this.cardsOnTable = this.cardsOnTable.filter(_.name != combo(i).name)
     lastCapturer = Some(p1)
+  }
+  
+  def trail (p1: Player, playerCard: Card) = {
+    p1.playCard(playerCard)
+    this.cardsOnTable = this.cardsOnTable :+ playerCard
   }
   
   //NOTE Have to check for behaviour of maxBy in '0' cases
@@ -96,14 +101,60 @@ object Game extends App {
 //   count += 1
 // }
   
-  
-//  this.addPlayers(Vector("Atreya","Long","Aayush","Sergey","Dean"))
-//  shuffle
-//  deal
-//  for (i <- 0 until players.length) println(players(i))
-//  print(this)
+import scala.io._  
+  this.addPlayers(Vector("Atreya","Long","Aayush","Sergey"))
+  shuffle
+  deal
+  print(this)
+  def showCards : Unit = {
+     print("Cards on deck : " ) 
+    this.cardsOnTable.foreach(n => print( "" + n.toString() + " "))
+  }
+  def showHand (p1: Player): Unit = {
+    print("\nPlayer's hand : " )
+    p1.cardsInHand.foreach(n=> print("" + n.toString() + " "))
+  }
+  for (i <- 0 until players.length){
+      println("\n\nPlayer " + (i+1) + ": " + players(i).name + "'s chance ") 
+      showCards
+      showHand(players(i))
+      var input = readLine("\nChoose your move: <capture/trail> + : <your card> : <combo to capture> => ")
+      var inputL = input.split(':')
+      if (inputL(i) == "trail") this.trail(players(i), players(i).cardsInHand.filter(_.name == inputL(1))(0))
+      else {
+        val playerCard =  players(i).cardsInHand.filter(inputL(1) == _.name)(0)
+        inputL = inputL(2).split(",")
+        val combo = inputL.map(n => this.cardsOnTable.filter(n == _.name)(0)).toVector
+        if(this.checkCapture(players(i), playerCard, combo)) this.executeCapture(players(i), playerCard, combo) 
+      }
+      println(players(i).cardsInHand)
+    }
+ 
 //  while (!isWon){
 //    
+//    //print cards
+//  def showCards : Unit = {
+//     print("Cards on deck : " ) 
+//    this.cardsOnTable.foreach(n => print( "" + n.toString() + " "))
+//  }
+//  def showHand (p1: Player): Unit = {
+//    print("\nPlayer's hand : " )
+//    p1.cardsInHand.foreach(n=> print("" + n.toString() + " "))
+//  }
+//    //executes moves
+//  for (i <- 0 until players.length){
+//      println("\n\nPlayer " + (i+1) + ": " + players(i).name + "'s chance ") 
+//      showCards
+//      showHand(players(i))
+//    }
+//      
+//    //checks if round is over
+//    
+//    //check if game is over
+//    if (this.cardsOnTable.length == 0){
+//      isWon = true
+//      println("Winner of the game is : " + this.winner)
+//    }
 //  }
   
   

@@ -31,3 +31,10 @@ Rough workload has been 15-20 hours
 
 I am slightly behind on the implementation of the textUI and optimalMove method.
 
+7.04.2020
+
+The method returns the winner given that the number of cards in the deck
+=0 and the game is over 
+
+
+Could not do much work due to exams and term end quizzes
