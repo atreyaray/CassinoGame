@@ -53,9 +53,7 @@ object Game extends App {
     if (combo.length == this.cardsOnTable.length ) p1.addPoints(1)
     val combinedCombo = combo :+ playerCard
     p1.capture(combinedCombo)
-         println("checkPoint1")
     p1.playCard(playerCard)
-            println("checkPoint2")
     for (i <- 0 until combo.length ) this.cardsOnTable = this.cardsOnTable.filter(_.name != combo(i).name)
     lastCapturer = Some(p1)
   }
@@ -204,17 +202,20 @@ import scala.io._
         
         var input = readLine("\nChoose your move: <capture/trail>: ")
         input.trim().toLowerCase() match {
-          case "capture" => var playerCard = readLine("Card to capture with : ")
-                            var playerCombo = readLine("Combo to capture : ").split(":")
+          case "capture" => var playerCard = readLine("Card to capture with : ").trim().toLowerCase()
+                            var playerCombo = readLine("Combo to capture : ").split(":").map(_.trim().toLowerCase())
                             //checks if card to capture with is in the hand
                             //checks if cards chosen for combo are on the table
-                            if (player.cardsInHand.exists(_.name == playerCard) && playerCombo.forall(this.cardsOnTable.contains(_))){
-                                val pCard  = player.cardsInHand.filter(_.name == playerCard)(0)
+                            if (player.cardsInHand.exists(_.name == playerCard) 
+                                && playerCombo.forall(m => !this.cardsOnTable.filter(n =>n.name == m).isEmpty)){
+                                
+                               val pCard  = player.cardsInHand.filter(_.name == playerCard)(0)
                                 var combo = Vector[Card]()
                                 for (i <- playerCombo) combo = combo ++ this.cardsOnTable.filter(_.name == i)
                                     if(this.checkCapture(player, pCard, combo)){    
                                         println("Move initiated")
                                         this.executeCapture(player, pCard, combo)
+                                        moveFailed = false
                                     }
                                     else {
                                       println("Move failed")
@@ -227,12 +228,15 @@ import scala.io._
                            }
                              
           
-          case "trail" =>  var trail = readLine("Card to trail : ")
+          case "trail" =>  var trail = readLine("Card to trail : ").trim().toLowerCase()
                            if(!player.cardsInHand.exists(_.name == trail)){
                              println("Move failed")
                              moveFailed = true
                            }
-                           else this.trail(player, player.cardsInHand.filter(_.name == trail)(0))
+                           else {
+                             this.trail(player, player.cardsInHand.filter(_.name == trail)(0))
+                             moveFailed = false 
+                           }
                            
                            
           case  other => println("No such command possible, move failed")
@@ -245,6 +249,8 @@ import scala.io._
     if (players.map(_.cardsInHand.length).sum == 0){
       //all existing cards on deck go to lastCapturer
       lastCapturer.getOrElse(null).capture(this.cardsOnTable)
+      //update cardsOnTable
+      this.cardsOnTable = Vector[Card]()
       //calculate point from the round
       calculatePoints
       //shpw points
