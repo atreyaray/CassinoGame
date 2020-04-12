@@ -86,6 +86,9 @@ object Game extends App {
     println(s2)
     if(!s2.isEmpty) s2(0)._1.addPoints(1)
     
+    //capturedCards have to be refreshed for next round
+    players.foreach(_.capturedCards = Vector[Card]())
+    
   }
   
   def winner = players.zip(this.players.map(_.points)).maxBy(_._2)._1
