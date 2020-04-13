@@ -18,9 +18,9 @@ class FileHandler {
     file.delete()
 
     //file writers
-    val fileWriter = new FileWriter(textFile,true)
+    val fileWriter = new FileWriter(textFile)
     val writer = new BufferedWriter(fileWriter)
-   
+    
     //getDate
     val today = Calendar.getInstance.getTime.toString()
     
