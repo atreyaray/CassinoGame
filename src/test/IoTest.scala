@@ -7,10 +7,12 @@ import org.scalatest._
 
 class IoTest extends FlatSpec{
   
-  "A deck of cards" should "be shuffled correctly" in {
-    Game.shuffle
-   // assert(Game.deck.length == 52)
+  "A file" should "be not empty" in {
+    val fh = new FileHandler
+    assert(fh.readFile("testIO_1.txt").map(_.trim()).map(_.split('\n')).length != 0)
   }
+  
+  
   
   //1.create a new file handler
   //2.create a new FileWriter
