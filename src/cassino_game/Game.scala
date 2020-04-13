@@ -41,9 +41,9 @@ object Game extends App {
   
   //deals one card to a given player
   def dealOne (p1: Player) = {
-    while(this.cards.length != 0){  
+    if(this.cards.length != 0){  
       val hand = cards.take(1)
-      cards = cards.drop(1)
+      cards = cards.tail
       p1.deal(hand)
    }
   }
@@ -201,6 +201,8 @@ import scala.io._
       println("Player " + (i+1) + "'s deck " + player)
       println("Cards Left : " + cards.length)
       
+      val fh = new FileHandler
+      fh.saveGame("testIO_2.txt")
     //checks if round is over
     if (players.map(_.cardsInHand.length).sum == 0){
       //all existing cards on deck go to lastCapturer
