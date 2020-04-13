@@ -29,19 +29,32 @@ object Game extends App {
     for (i <-  names) players = players :+ new Player(i)
   }
   
-  //deals new cards
-  // ##Need to check if there are insufficient number of cards.
+  //deals cards initially
   def deal = {
-    if (cards.length != 0) {
+    if (cards.length == 52) {
       val initialHands = cards.take(players.length*4).grouped(4).toVector
       cards = cards.drop(players.length*4)
-      val initialTableHand  = cards.take(4)
-      cards = cards.drop(4)
-      for (i <- 0 until initialHands.length) players(i).deal(initialHands(i))
-      this.cardsOnTable = this.cardsOnTable ++ initialTableHand
+       for (i <- 0 until initialHands.length) players(i).deal(initialHands(i))
+       dealTable
     }
   }
+  
+  //deals one card to a given player
+  def dealOne (p1: Player) = {
+    while(this.cards.length != 0){  
+      val hand = cards.take(1)
+      cards = cards.drop(1)
+      p1.deal(hand)
+   }
+  }
  
+  //deal table 
+  def dealTable = {
+     val initialTableHand  = cards.take(4)
+     cards = cards.drop(4)
+     this.cardsOnTable = this.cardsOnTable ++ initialTableHand
+  }
+  
   def checkCapture (p1 : Player, playerCard : Card, combo : Vector[Card]) : Boolean = {
     val comboVal = combo.map(_.value).reduceLeft((n,sum) => n+sum)
     val playerVal = playerCard.specialValue.getOrElse(playerCard.value)
@@ -50,7 +63,7 @@ object Game extends App {
  
   def executeCapture (p1: Player, playerCard : Card, combo : Vector[Card]) ={
     //Specifically in the case of a sweep
-    if (combo.length == this.cardsOnTable.length ) p1.addPoints(1)
+    if (combo.length == this.cardsOnTable.length && this.cardsOnTable.length != 1 ) p1.addPoints(1)
     val combinedCombo = combo :+ playerCard
     p1.capture(combinedCombo)
     p1.playCard(playerCard)
@@ -91,7 +104,7 @@ object Game extends App {
     
   }
   
-  def winner = players.zip(this.players.map(_.points)).maxBy(_._2)._1
+  def winner = players.zip(this.players.map(_.points)).maxBy(_._2)._1.name
   
   override def toString() = {
     var ans = ""
@@ -100,15 +113,6 @@ object Game extends App {
   }
   
   
-// var count = 0
-// for (i<- 0 until 52) {
-//   shuffle
-//   println(deck.distinct.length)
-//   if ((i+1) % 13 == 0) println(" ")
-//   print(cards(i) + " ")
-  
-//   count += 1
-// }
   
   
   
@@ -125,61 +129,7 @@ import scala.io._
   //cards dealt
   deal
   print(this)
-
-  //Show cards on the table
-  def showCards : Unit = {
-     print("Cards on deck : " ) 
-    this.cardsOnTable.foreach(n => print( "" + n.toString() + " "))
-  }
-  //Show individual hands
-  def showHand (p1: Player): Unit = {
-    print("\nPlayer's hand : " )
-    p1.cardsInHand.foreach(n=> print("" + n.toString() + " "))
-  }
-  
-  //turns
-//  for (i <- 0 until players.length){
-//    
-//    val player = players(i)
-//     
-//      println("\n\nPlayer " + (i+1) + ": " + player.name + "'s chance ") 
-//      showCards
-//      showHand(player)
-//      var input = readLine("\nChoose your move: <capture/trail>: ")
-//      input match {
-//        case "capture" => var playerCard = readLine("Card to capture with : ")
-//                          var playerCombo = readLine("Combo to capture : ").split(":")
-//                          val pCard  = player.cardsInHand.filter(_.name == playerCard)(0)
-//                          var combo = Vector[Card]()
-//                          for (i <- playerCombo) combo = combo ++ this.cardsOnTable.filter(_.name == i)
-//                          if(this.checkCapture(player, pCard, combo)){
-//                            println("Move initiated")
-//                            this.executeCapture(player, pCard, combo)
-//                          }
-//                          else println("Move failed")
-//          
-//        case "trail" =>  var trail = readLine("Card to trail : ")
-//                         this.trail(player, player.cardsInHand.filter(_.name == trail)(0))
-//
-//        case  other => println("No such command possible")
-//      }
-//      println("Player " + (i+1) + "'s deck " + player)
-//      
-//    }
- 
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+    
   var i = -1
   while (!isWon){
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -219,6 +169,7 @@ import scala.io._
                                         println("Move initiated")
                                         this.executeCapture(player, pCard, combo)
                                         moveFailed = false
+                                        dealOne(player)
                                     }
                                     else {
                                       println("Move failed")
@@ -239,6 +190,7 @@ import scala.io._
                            else {
                              this.trail(player, player.cardsInHand.filter(_.name == trail)(0))
                              moveFailed = false 
+                             dealOne(player)
                            }
                            
                            
@@ -247,6 +199,7 @@ import scala.io._
         }
      }while(moveFailed) 
       println("Player " + (i+1) + "'s deck " + player)
+      println("Cards Left : " + cards.length)
       
     //checks if round is over
     if (players.map(_.cardsInHand.length).sum == 0){
@@ -256,9 +209,8 @@ import scala.io._
       this.cardsOnTable = Vector[Card]()
       //calculate point from the round
       calculatePoints
-      //shpw points
+      //show points
       players.foreach(n => print("" + n.name + " " +  n.points + " "))
-      deal
     }
     //check if game is over
     if (players.map(_.cardsInHand.length).sum == 0 && cards.isEmpty){
