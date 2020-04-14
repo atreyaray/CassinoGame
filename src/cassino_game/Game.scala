@@ -1,7 +1,7 @@
 package cassino_game
 
 import scala.util.Random._
-
+import scala.io._
 object Game extends App {
 
   val fileHandler = new FileHandler
@@ -48,19 +48,21 @@ object Game extends App {
    }
   }
  
-  //deal table 
+  //deals cards on table 
   def dealTable = {
      val initialTableHand  = cards.take(4)
      cards = cards.drop(4)
      this.cardsOnTable = this.cardsOnTable ++ initialTableHand
   }
   
+  //checks if move is possible
   def checkCapture (p1 : Player, playerCard : Card, combo : Vector[Card]) : Boolean = {
     val comboVal = combo.map(_.value).reduceLeft((n,sum) => n+sum)
     val playerVal = playerCard.specialValue.getOrElse(playerCard.value)
     (comboVal % playerVal == 0)
   }
  
+  //If the move is possible, this method executes the move
   def executeCapture (p1: Player, playerCard : Card, combo : Vector[Card]) ={
     //Specifically in the case of a sweep
     if (combo.length == this.cardsOnTable.length && this.cardsOnTable.length != 1 ) p1.addPoints(1)
@@ -71,6 +73,7 @@ object Game extends App {
     lastCapturer = Some(p1)
   }
   
+  //trailing a card
   def trail (p1: Player, playerCard: Card) = {
     p1.playCard(playerCard)
     this.cardsOnTable = this.cardsOnTable :+ playerCard
@@ -120,7 +123,7 @@ object Game extends App {
   
   
   
-import scala.io._  
+  
   //SETUP
   //Players added
   this.addPlayers(Vector("Atreya","Long","Aayush","Sergey"))
