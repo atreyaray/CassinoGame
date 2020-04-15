@@ -2,10 +2,11 @@ package cassino_game
 
 class Player (givenName : String){
   
-  val name = givenName
-  var points = 0
+  val name : String = givenName
+  var points : Int = 0
   var capturedCards = Vector[Card]()
   var cardsInHand = Vector[Card]()
+  val compPlayer : Boolean = givenName.take(4) == "Comp" 
   
   def addPoints (addition : Int) = points += addition
   def capture (cards : Vector[Card]) = capturedCards = capturedCards ++ cards
