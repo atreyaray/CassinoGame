@@ -77,7 +77,6 @@ object GameGUI extends SimpleSwingApplication{
     }
    
    contents += playerFields
-
     this.listenTo(okButton)
     this.listenTo(enterNameButton)
     this.reactions += {
