@@ -79,6 +79,67 @@ object Game extends App {
     this.cardsOnTable = this.cardsOnTable :+ playerCard
   }
   
+  //computer generated moves
+  def optimalMove(p1: Player)={
+    
+    //combinations of possible combos to capture
+    var combinations = Iterator[Vector[Card]]()
+    for (i <- 1 to cardsOnTable.length)  combinations = combinations ++ this.cardsOnTable.combinations(i)
+    
+     var bestChoice : (Int, Option[Vector[Card]])= (0, None)
+    
+    //check all the combinations 
+    while(combinations.hasNext){
+      //pick one of the possible choices
+      val choice = combinations.next()
+      //initalize score 
+      var score = 0
+      //iterate through all player cards
+      for (i <- 0 until p1.cardsInHand.length){
+        
+        //check if move is possible with this combination and this player cards
+        if(checkCapture(p1, p1.cardsInHand(i), choice)){
+          //check d10
+          if ( (choice :+ p1.cardsInHand(i)).exists(_.name == "d10") ) score += 2
+          //check sweep
+          if (choice.length == this.cardsOnTable.length) score += 1
+          //check ace
+          if ( (choice :+ p1.cardsInHand(i)).exists(_.value == 1) ) score +=  (choice :+ p1.cardsInHand(i)).filter(_.value == 1).length
+          //check s2
+          if ( (choice :+ p1.cardsInHand(i)).exists(_.name == "s2") ) score += 1
+        
+          //check score against bestChoice
+          if(bestChoice._2.isDefined && score > bestChoice._1)
+            bestChoice = (score, Some(choice :+ p1.cardsInHand(i)))
+          //else if there is no scoring choice but there is no other choice yet
+          else if (bestChoice._2.isEmpty) bestChoice = (0,Some(choice :+ p1.cardsInHand(i)))
+          //else if there is no scoring choice but is better than existing non scoring choice
+          //but IGNORE if existing score is better than current score
+          else {
+            if (bestChoice._1 == 0 && choice.length +1 > bestChoice._2.size ) bestChoice = (0,Some(choice :+ p1.cardsInHand(i)))
+          }
+        }
+        //if the move is not possible then move on
+      } 
+      //if there is a bestChoice then execute it else trail
+      if (bestChoice._2.isDefined) this.executeCapture(p1, bestChoice._2.get.last , bestChoice._2.get.dropRight(1))
+      else{
+        //iterate through all the cards of the player
+        var minVal = 0
+        var min : Option[Card] = None
+        for (i <- 0 until p1.cardsInHand.length){
+          //choose the lowest valued card (ie. choose special values, if it is a normal card then choose normal value instead)
+          val value = p1.cardsInHand(i).specialValue.getOrElse(p1.cardsInHand(i).value)
+          if (minVal > value) {
+            min = Some(p1.cardsInHand(i))
+            minVal = value
+          }
+        }
+        this.trail(p1, min.get)
+      } 
+    }
+  }
+  
   //NOTE Have to check for behaviour of maxBy in '0' cases
   def calculatePoints = {
     
@@ -125,8 +186,16 @@ object Game extends App {
   
   
   //SETUP
+  var comp = readLine("Do you want computer opponents").trim().toLowerCase()
+  if (comp == "yes"){}
+  var n = readLine("How many players ?").toInt
+  var playerNames = Vector[String]()
+  for (i <- 0 until n){
+    playerNames = playerNames :+ readLine("Player " + (i+1) + ": ")
+  }
   //Players added
-  this.addPlayers(Vector("Atreya","Long","Aayush","Sergey"))
+  //Vector("Atreya","Long","Aayush","Sergey")
+  this.addPlayers(playerNames)
   //deck shuffled
   shuffle
   //cards dealt

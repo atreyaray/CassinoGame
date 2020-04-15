@@ -1,0 +1,44 @@
+###
+CASSINO GAME
+v1.0
+Mon Apr 13 23:59:13 EEST 2020
+
+###
+METADATA
+NUMBEROFPLAYERS 4
+ROUNDNUMMBER 1
+NOOFCARDSREMAINING 2
+CARDSONTABLE s8:h2:
+CARDSINDECK c4:c2:hj:d10:s10:c9:cq:dj:s3:s6:ca:c5:sa:s2:s9:d9:dk:ck:h9:ha:h6:h3:d2:d4:d3:
+LASTCAPTURER Sergey
+
+###
+PLR 
+NAME Atreya
+SCORE 0
+HAND sj:c10:h5:s4:
+CAPTUREDCARDS c7:d7:
+
+###
+PLR 
+NAME Long
+SCORE 0
+HAND c8:h4:cj:h8:
+CAPTUREDCARDS s5:d5:
+
+###
+PLR 
+NAME Aayush
+SCORE 0
+HAND dq:hk:da:s7:
+CAPTUREDCARDS 
+
+###
+PLR 
+NAME Sergey
+SCORE 0
+HAND hq:h10:sq:c3:
+CAPTUREDCARDS d6:c6:
+
+###
+EOF
