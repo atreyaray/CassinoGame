@@ -1,5 +1,6 @@
 package cassino_game
 
+
 import scala.util.Random._
 import scala.io._
 object Game extends App {
@@ -10,12 +11,27 @@ object Game extends App {
   var cardsOnTable = Vector[Card]()
   var lastCapturer : Option[Player] = None
   var isWon = false
+
   
  var deck = Vector("ha","h2","h3","h4","h5","h6","h7","h8","h9","h10","hj","hq","hk") ++
             Vector("da","d2","d3","d4","d5","d6","d7","d8","d9","d10","dj","dq","dk") ++
             Vector("sa","s2","s3","s4","s5","s6","s7","s8","s9","s10","sj","sq","sk") ++
             Vector("ca","c2","c3","c4","c5","c6","c7","c8","c9","c10","cj","cq","ck") 
  
+ //initializes a new game
+ def newGame (comp : Boolean, playerNames : Vector[String]) = {
+    //state variables refreshed
+    players       = Vector[Player]()
+    cards         = Vector[Card]()
+    cardsOnTable  = Vector[Card]()
+    lastCapturer  = None
+    isWon = false
+    //add players
+    if (comp) this.addPlayers(("Comp" +: playerNames))
+    shuffle 
+    deal
+    println(this)
+  }
  // Creates shuffled deck (Vector) of Cards class          
  def shuffle = {
     val rand = new util.Random(12)

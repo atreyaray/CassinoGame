@@ -28,35 +28,47 @@ object GameGUI extends SimpleSwingApplication{
   
   def openInstructions = ???
   
+  val game =  Game
+  var players = 0 
+  val okButton = new Button("OK")
+  val enterNameButton = new Button("Next")
+  var playerFields = new BoxPanel(Orientation.Vertical)
+  var playerFieldPanel = new BoxPanel(Orientation.Vertical)
+  val playerCount  = new ComboBox(Vector(1,2,3,4,5,6))
+  var playerName = Vector[TextField]()
+  var playerNameVec = Vector[String]()
+  val compToggleButton = new ToggleButton("Yes")
+  var compOpponent = false
+
+  
+  
+  //Creates a panel which displays textFields
   def nameInput(count : Int) = {
     val panel = new BoxPanel(Orientation.Vertical){
       for (i <- 0 until count){
         contents += new BoxPanel(Orientation.Horizontal){
+          //add to playerName
+          playerName = playerName :+ (new TextField())
           contents += new Label("Enter your name")
-          contents += new TextField()
+          contents += playerName(i)
           this.font = new Font("Arial",java.awt.Font.CENTER_BASELINE,12)
            this.maximumSize_=(new Dimension(300,30))
         }
         this.maximumSize_=(new Dimension(300,200))
-      }
-    }
+      } }
     panel
   }
   
   //Initital screen
   var currentScreen = new BoxPanel(Orientation.Vertical){
-    
-    var players = 0
-    val playerCount  = new ComboBox(Vector(1,2,3,4,5,6))
-    var playerFields  = new BoxPanel(Orientation.Vertical){
+   
+      playerFieldPanel  = new BoxPanel(Orientation.Vertical){
       contents += new TextField("Alone? Here with your gang?"){
          horizontalAlignment = Alignment.Center
          this.editable = false
          this.maximumSize_=(new Dimension(1000,300))
       }
     }
-    val okButton = new Button("OK")
-    val enterNameButton = new Button("Next")
     
     //Header : "Cassino: New Game"
     contents += new FlowPanel{
@@ -64,30 +76,52 @@ object GameGUI extends SimpleSwingApplication{
         this.foreground = (Color.BLUE)
         font = new java.awt.Font("Serif",java.awt.Font.BOLD,48)
       }
-       this.maximumSize = (new Dimension(1000,300))
+       this.maximumSize = (new Dimension(1000,100))
+    }
+//    //Flow Panel for input
+    contents += new FlowPanel{
+       contents += new Label("Do you want a computer opponent ?")
+       contents += compToggleButton   
+       //size of flowPanel
+       this.maximumSize = (new Dimension(300,100))
     }
     //Flow Panel for input
     contents += new FlowPanel{
-       val button = okButton
        contents += new Label("How many players?")
        contents += playerCount
-       contents += button
+       contents += okButton
        contents += nameInput(players)       
+       //size of flowPanel
        this.maximumSize = (new Dimension(300,100))
     }
-   
-   contents += playerFields
+   //Panel to enter Player Names
+   contents += playerFieldPanel
+   //Action Listeners
     this.listenTo(okButton)
     this.listenTo(enterNameButton)
+    this.listenTo(compToggleButton)
+    //Reactions
     this.reactions += {
-         case e : ButtonClicked =>{ players = playerCount.selection.item.toString().toInt
-                                   println(players)
-                                   playerFields.contents.clear()
-                                   playerFields.contents += nameInput(players)
-                                   this.contents += enterNameButton
-                                   this.revalidate()
-                                   this.repaint()
-                                   }
+         case e : ButtonClicked =>if (e.source == okButton){
+                                    players = playerCount.selection.item.toString().toInt
+                                     println(players)
+                                     playerFieldPanel.contents.clear()
+                                     playerFields = nameInput(players)
+                                     playerFieldPanel.contents += playerFields
+                                     this.contents += enterNameButton
+                                     this.revalidate()
+                                     this.repaint()
+                                  }
+                                  else if(e.source == enterNameButton){
+                                    playerNameVec = playerNameVec ++ playerName.map(_.text)
+                                    println(playerNameVec)
+                                    game.newGame(compOpponent, playerNameVec)
+                                  }
+                                  else {
+                                    //playerNameVec = playerNameVec :+ "Comp"
+                                    compOpponent = compToggleButton.selected
+                                  }
+         
      }
 //      override def paintComponent(g: Graphics2D) ={
 //       val image = javax.imageio.ImageIO.read(new File("1C.png"))
