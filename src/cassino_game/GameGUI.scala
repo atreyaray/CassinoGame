@@ -38,7 +38,34 @@ object GameGUI extends SimpleSwingApplication{
   var playerNameVec = Vector[String]()
   val compToggleButton = new ToggleButton("Yes")
   var compOpponent = false
-
+  
+  var topPanel = new FlowPanel{
+                    contents += new Label("Cassino: New Game"){
+                      this.foreground = (Color.BLUE)
+                      font = new java.awt.Font("Serif",java.awt.Font.BOLD,48)
+                     }
+                     this.maximumSize = (new Dimension(1000,100))
+                    }
+  var bottomPanel = new FlowPanel{
+                     contents += new Label("How many players?")
+                     contents += playerCount
+                     contents += okButton
+                     contents += nameInput(players)       
+                     //size of flowPanel
+                     this.maximumSize = (new Dimension(300,100))
+                }
+  var middlePanel = new FlowPanel{
+                       contents += new Label("Do you want a computer opponent ?")
+                       contents += compToggleButton   
+                       //size of flowPanel
+                       this.maximumSize = (new Dimension(300,100))
+                     }
+  
+  def inGamePanel ={
+    new BoxPanel(Orientation.Vertical){
+      contents += new Label("Hello")
+    }
+  }
   
   
   //Creates a panel which displays textFields
@@ -68,33 +95,15 @@ object GameGUI extends SimpleSwingApplication{
          this.maximumSize_=(new Dimension(1000,300))
       }
     }
-    
     //Header : "Cassino: New Game"
-    contents += new FlowPanel{
-      contents += new Label("Cassino: New Game"){
-        this.foreground = (Color.BLUE)
-        font = new java.awt.Font("Serif",java.awt.Font.BOLD,48)
-      }
-       this.maximumSize = (new Dimension(1000,100))
-    }
-//    //Flow Panel for input
-    contents += new FlowPanel{
-       contents += new Label("Do you want a computer opponent ?")
-       contents += compToggleButton   
-       //size of flowPanel
-       this.maximumSize = (new Dimension(300,100))
-    }
+    contents += topPanel
     //Flow Panel for input
-    contents += new FlowPanel{
-       contents += new Label("How many players?")
-       contents += playerCount
-       contents += okButton
-       contents += nameInput(players)       
-       //size of flowPanel
-       this.maximumSize = (new Dimension(300,100))
-    }
+    contents += middlePanel
+    //Flow Panel for input
+    contents += bottomPanel
    //Panel to enter Player Names
    contents += playerFieldPanel
+//   contents += imagePanel
    //Action Listeners
     this.listenTo(okButton)
     this.listenTo(enterNameButton)
@@ -115,6 +124,9 @@ object GameGUI extends SimpleSwingApplication{
                                     playerNameVec = playerNameVec ++ playerName.map(_.text)
                                     println(playerNameVec)
                                     Game.newGame(compOpponent, playerNameVec)
+                                    this.contents.clear()
+                                    this.revalidate()
+                                    this.repaint()
                                   }
                                   else {
                                     //playerNameVec = playerNameVec :+ "Comp"
@@ -122,11 +134,14 @@ object GameGUI extends SimpleSwingApplication{
                                   }
          
      }
+   
+  }
+  
+  
 //      override def paintComponent(g: Graphics2D) ={
 //       val image = javax.imageio.ImageIO.read(new File("1C.png"))
 //       g.drawImage(image, 250,250, 70,100,null )
 //      }
-    }
   
   
   
