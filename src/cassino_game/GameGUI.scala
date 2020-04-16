@@ -28,7 +28,6 @@ object GameGUI extends SimpleSwingApplication{
   
   def openInstructions = ???
   
-  val game =  Game
   var players = 0 
   val okButton = new Button("OK")
   val enterNameButton = new Button("Next")
@@ -115,7 +114,7 @@ object GameGUI extends SimpleSwingApplication{
                                   else if(e.source == enterNameButton){
                                     playerNameVec = playerNameVec ++ playerName.map(_.text)
                                     println(playerNameVec)
-                                    game.newGame(compOpponent, playerNameVec)
+                                    Game.newGame(compOpponent, playerNameVec)
                                   }
                                   else {
                                     //playerNameVec = playerNameVec :+ "Comp"

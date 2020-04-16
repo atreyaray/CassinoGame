@@ -3,7 +3,7 @@ package cassino_game
 
 import scala.util.Random._
 import scala.io._
-object Game extends App {
+object Game {//extends App {
 
   val fileHandler = new FileHandler
   var players = Vector[Player]()
