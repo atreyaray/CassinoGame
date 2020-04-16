@@ -239,116 +239,116 @@ object Game {//extends App {
   
   
   
-  //SETUP
-  var playerNames = Vector[String]()
-  var comp = readLine("Do you want computer opponents? ").trim().toLowerCase()
-  if (comp == "yes"){ playerNames = playerNames :+ "Comp"}
-  var n = readLine("How many players ?").toInt
-  for (i <- 0 until n){
-    playerNames = playerNames :+ readLine("Player " + (i+1) + ": ")
-  }
-  //Players added
-  //Vector("Atreya","Long","Aayush","Sergey")
-  this.addPlayers(playerNames)
-  //deck shuffled
-  shuffle
-  //cards dealt
-  deal
-  print(this)
-    
-  var i = -1
-  while (!isWon){
-////////////////////////////////////////////////////////////////////////////////////////////
-  //print cards
-    def showCards : Unit = {
-       print("Cards on deck : " ) 
-      this.cardsOnTable.foreach(n => print( "" + n.toString() + " "))
-    }
-    def showHand (p1: Player): Unit = {
-      print("\nPlayer's hand : " )
-      p1.cardsInHand.foreach(n=> print("" + n.toString() + " "))
-    }
-////////////////////////////////////////////////////////////////////////////////////////////  
-    i += 1
-    i %= 4
-    val player = players(i)
-     
-        var moveFailed  = false   
-        if (player.compPlayer){ this.optimalMove(player)}
-    else{  
-          do{
-            println("\n\nPlayer " + (i+1) + ": " + player.name + "'s chance ") 
-            showCards
-            showHand(player)
-        
-            var input = readLine("\nChoose your move: <capture/trail>: ")
-            input.trim().toLowerCase() match {
-              case "capture" => var playerCard = readLine("Card to capture with : ").trim().toLowerCase()
-                                var playerCombo = readLine("Combo to capture : ").split(":").map(_.trim().toLowerCase())
-                                //checks if card to capture with is in the hand
-                                //checks if cards chosen for combo are on the table
-                                if (player.cardsInHand.exists(_.name == playerCard) 
-                                    && playerCombo.forall(m => !this.cardsOnTable.filter(n =>n.name == m).isEmpty)){
-                                    //selecting card object of choice                      
-                                   val pCard  = player.cardsInHand.filter(_.name == playerCard)(0)
-                                    var combo = Vector[Card]()
-                                    for (i <- playerCombo) combo = combo ++ this.cardsOnTable.filter(_.name == i)
-                                        if(this.checkCapture(player, pCard, combo)){    
-                                            println("Move initiated")
-                                            this.executeCapture(player, pCard, combo)
-                                            moveFailed = false
-                                            dealOne(player)
-                                        }
-                                        else {
-                                          println("Move failed after")
-                                          moveFailed = true
-                                        }
-                                }
-                                else {
-                                 println("Move failed before")
-                                 moveFailed = true
-                                }
-                             
-          
-              case "trail" =>  var trail = readLine("Card to trail : ").trim().toLowerCase()
-                               if(!player.cardsInHand.exists(_.name == trail)){
-                                 println("Move failed")
-                                 moveFailed = true
-                               }
-                               else {
-                                 this.trail(player, player.cardsInHand.filter(_.name == trail)(0))
-                                 moveFailed = false 
-                                 dealOne(player)
-                               }
-                           
-                           
-              case  other => println("No such command possible, move failed")
-                             moveFailed = true
-            }
-         }while(moveFailed)
-      }   
-      println("Player " + (i+1) + "'s deck " + player)
-      println("Cards Left : " + cards.length)
-      
-      val fh = new FileHandler
-      fh.saveGame("testIO_1.txt")
-    //checks if round is over
-    if (players.map(_.cardsInHand.length).sum == 0){
-      //all existing cards on deck go to lastCapturer
-      lastCapturer.getOrElse(null).capture(this.cardsOnTable)
-      //update cardsOnTable
-      this.cardsOnTable = Vector[Card]()
-      //calculate point from the round
-      calculatePoints
-      //show points
-      players.foreach(n => print("" + n.name + " " +  n.points + " "))
-    }
-    //check if game is over
-    if (players.map(_.cardsInHand.length).sum == 0 && cards.isEmpty){
-      isWon = true
-      println("Winner of the game is : " + this.winner)
-    }
-  }
+//  //SETUP
+//  var playerNames = Vector[String]()
+//  var comp = readLine("Do you want computer opponents? ").trim().toLowerCase()
+//  if (comp == "yes"){ playerNames = playerNames :+ "Comp"}
+//  var n = readLine("How many players ?").toInt
+//  for (i <- 0 until n){
+//    playerNames = playerNames :+ readLine("Player " + (i+1) + ": ")
+//  }
+//  //Players added
+//  //Vector("Atreya","Long","Aayush","Sergey")
+//  this.addPlayers(playerNames)
+//  //deck shuffled
+//  shuffle
+//  //cards dealt
+//  deal
+//  print(this)
+//    
+//  var i = -1
+//  while (!isWon){
+//////////////////////////////////////////////////////////////////////////////////////////////
+//  //print cards
+//    def showCards : Unit = {
+//       print("Cards on deck : " ) 
+//      this.cardsOnTable.foreach(n => print( "" + n.toString() + " "))
+//    }
+//    def showHand (p1: Player): Unit = {
+//      print("\nPlayer's hand : " )
+//      p1.cardsInHand.foreach(n=> print("" + n.toString() + " "))
+//    }
+//////////////////////////////////////////////////////////////////////////////////////////////  
+//    i += 1
+//    i %= 4
+//    val player = players(i)
+//     
+//        var moveFailed  = false   
+//        if (player.compPlayer){ this.optimalMove(player)}
+//    else{  
+//          do{
+//            println("\n\nPlayer " + (i+1) + ": " + player.name + "'s chance ") 
+//            showCards
+//            showHand(player)
+//        
+//            var input = readLine("\nChoose your move: <capture/trail>: ")
+//            input.trim().toLowerCase() match {
+//              case "capture" => var playerCard = readLine("Card to capture with : ").trim().toLowerCase()
+//                                var playerCombo = readLine("Combo to capture : ").split(":").map(_.trim().toLowerCase())
+//                                //checks if card to capture with is in the hand
+//                                //checks if cards chosen for combo are on the table
+//                                if (player.cardsInHand.exists(_.name == playerCard) 
+//                                    && playerCombo.forall(m => !this.cardsOnTable.filter(n =>n.name == m).isEmpty)){
+//                                    //selecting card object of choice                      
+//                                   val pCard  = player.cardsInHand.filter(_.name == playerCard)(0)
+//                                    var combo = Vector[Card]()
+//                                    for (i <- playerCombo) combo = combo ++ this.cardsOnTable.filter(_.name == i)
+//                                        if(this.checkCapture(player, pCard, combo)){    
+//                                            println("Move initiated")
+//                                            this.executeCapture(player, pCard, combo)
+//                                            moveFailed = false
+//                                            dealOne(player)
+//                                        }
+//                                        else {
+//                                          println("Move failed after")
+//                                          moveFailed = true
+//                                        }
+//                                }
+//                                else {
+//                                 println("Move failed before")
+//                                 moveFailed = true
+//                                }
+//                             
+//          
+//              case "trail" =>  var trail = readLine("Card to trail : ").trim().toLowerCase()
+//                               if(!player.cardsInHand.exists(_.name == trail)){
+//                                 println("Move failed")
+//                                 moveFailed = true
+//                               }
+//                               else {
+//                                 this.trail(player, player.cardsInHand.filter(_.name == trail)(0))
+//                                 moveFailed = false 
+//                                 dealOne(player)
+//                               }
+//                           
+//                           
+//              case  other => println("No such command possible, move failed")
+//                             moveFailed = true
+//            }
+//         }while(moveFailed)
+//      }   
+//      println("Player " + (i+1) + "'s deck " + player)
+//      println("Cards Left : " + cards.length)
+//      
+//      val fh = new FileHandler
+//      fh.saveGame("testIO_1.txt")
+//    //checks if round is over
+//    if (players.map(_.cardsInHand.length).sum == 0){
+//      //all existing cards on deck go to lastCapturer
+//      lastCapturer.getOrElse(null).capture(this.cardsOnTable)
+//      //update cardsOnTable
+//      this.cardsOnTable = Vector[Card]()
+//      //calculate point from the round
+//      calculatePoints
+//      //show points
+//      players.foreach(n => print("" + n.name + " " +  n.points + " "))
+//    }
+//    //check if game is over
+//    if (players.map(_.cardsInHand.length).sum == 0 && cards.isEmpty){
+//      isWon = true
+//      println("Winner of the game is : " + this.winner)
+//    }
+//  }
 }
   
   
