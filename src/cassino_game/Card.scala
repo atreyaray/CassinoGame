@@ -1,7 +1,7 @@
-
-
 package cassino_game
 
+import javax.imageio.ImageIO._
+import java.io._
 class Card (givenName:String) {
   
   val name  : String = givenName
@@ -14,7 +14,7 @@ class Card (givenName:String) {
     case other => givenName.drop(1).toInt
   }
   
-
+ val image = read(new File(name+".png"))
 ///////////////////////////////////////////
 //Only certain cards get special values  //
 //  Aces:        14 in hand, 1 on table  //
@@ -27,6 +27,7 @@ class Card (givenName:String) {
                                                     case ("d"      , 10) => Some(16)
                                                     case _ => None
                                                    }    
+  
   
   override def toString() = "Card " + name
 }
