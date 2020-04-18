@@ -159,7 +159,7 @@ object GameGUI extends SimpleSwingApplication{
           g.setFont(new Font("Monospaced",Font.BOLD,20))
           g.drawString("Trail", 760, 605)
           g.drawRect(755,585,75,25)
-          
+          //Scoreboard Panel
           g.setColor(new Color(12,116,137))
           g.drawRect( 730 , 10, 250, 400)
           g.setFont(new Font("Monospaced",Font.BOLD,32))
@@ -167,7 +167,6 @@ object GameGUI extends SimpleSwingApplication{
           g.drawImage(ImageIO.read(new File("robot.png")), 750, 80, 30, 30,null)
           g.drawImage(ImageIO.read(new File("p2.png")), 745, 130, 40,40,null)
           g.drawImage(ImageIO.read(new File("p1.png")), 750, 200, 30,30, null)
-          
         
          //draw cards on the table 
           for(i <- 0 until image.length) {
@@ -209,7 +208,7 @@ object GameGUI extends SimpleSwingApplication{
                 //first card is selected from currentPlayer
                 //added toselection
                 playerSelection = 0
-                //draw selection1
+                //draw selection
                 this.revalidate()
                 this.repaint()
                 println("Hello it's working")
@@ -221,7 +220,7 @@ object GameGUI extends SimpleSwingApplication{
                     //second card is selected from currentPlayer
                     //added toselection
                     playerSelection = 1
-                    //draw selection1
+                    //draw selection
                     this.revalidate()
                     this.repaint()
                     println("Hello it's working again")
@@ -243,20 +242,20 @@ object GameGUI extends SimpleSwingApplication{
                     //fourth card is selected from currentPlayer
                     //added toselection
                     playerSelection = 3
-                    //draw selection1
+                    //draw selection
                     this.revalidate()
                     this.repaint()
                     println("Hello it's working again")
                 }
             }
           
-          
+          //CASE where cards on table are selected.
             else if(e.point.x >= 290 && e.point.x < 380 && e.point.y > 220 && e.point.y < 340){
               //if there is a card  
               if (Game.cardsOnTable.isDefinedAt(0) ){
                     if(alreadySelected(0)) alreadySelected = alreadySelected.updated(0, false) 
                     else alreadySelected  = alreadySelected.updated(0, true)
-                    //fourth card is selected from currentPlayer
+                    //first card is selected from currentPlayer
                     //draw selection1
                     this.revalidate()
                     this.repaint()
@@ -268,7 +267,7 @@ object GameGUI extends SimpleSwingApplication{
               if (Game.cardsOnTable.isDefinedAt(1) ){
                     if(alreadySelected(1)) alreadySelected = alreadySelected.updated(1, false) 
                     else alreadySelected  = alreadySelected.updated(1, true)
-                    //fourth card is selected from currentPlayer
+                    //second card is selected from currentPlayer
                     //draw selection1
                     this.revalidate()
                     this.repaint()
@@ -280,7 +279,7 @@ object GameGUI extends SimpleSwingApplication{
               if (Game.cardsOnTable.isDefinedAt(2) ){
                     if(alreadySelected(2)) alreadySelected = alreadySelected.updated(2, false) 
                     else alreadySelected  = alreadySelected.updated(2, true)
-                    //fourth card is selected from currentPlayer
+                    //third card is selected from currentPlayer
                     //draw selection1
                     this.revalidate()
                     this.repaint()
@@ -298,7 +297,13 @@ object GameGUI extends SimpleSwingApplication{
                     this.repaint()
                     println("Hello it's working again")
                 }
-            } 
+            }
+           else if (e.point.x > 700 && e.point.x <832 && e.point.y > 570 && e.point.y < 622){
+             println("Trail clicked!")
+           }
+           else if (e.point.x > 700 && e.point.x <832 && e.point.y > 515 && e.point.y < 560){
+             println("Capture clicked!")
+           }
             else println(e.point)
      }
         
