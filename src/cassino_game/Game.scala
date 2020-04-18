@@ -46,10 +46,10 @@ object Game {//extends App {
     for (i <-  names) players = players :+ new Player(i)
   }
   
-//  def nextPlayer(p1 : Player) = {
-//    val idx = this.players.indexOf(p1)
-//    players((idx+1)%players.length)
-//  }
+  def nextPlayer(p1 : Player) = {
+    val idx = this.players.indexOf(p1)
+    players((idx+1)%players.length)
+  }
   
   //deals cards initially
   def deal = {

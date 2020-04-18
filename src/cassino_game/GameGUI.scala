@@ -124,11 +124,22 @@ object GameGUI extends SimpleSwingApplication{
      //card selected from hand of player
      var playerSelection = 0
      var flag = 0
-      
+    //helper method
+     def drawBorder(g : Graphics2D , x : Int, y : Int, i : Int) = {
+      g.drawLine(x + 100*i -5  , y - 5      ,x + 100*i + 95, y - 5 )
+      g.drawLine(x + 100*i -5  , y - 5 + 130,x + 100*i + 95, y - 5 + 130 )
+      g.drawLine(x + 100*i -5  , y - 5      ,x + 100*i - 5 , y - 5 + 130 )
+      g.drawLine(x + 100*i + 95, y - 5      ,x + 100*i + 95, y - 5 + 130 )  
+      }
+     
     //showing the current board  
      def paintComp(g: Graphics2D, n : Int) = {
          if (alreadySelected.isEmpty) for (i <- 0 until Game.cardsOnTable.length) alreadySelected = alreadySelected :+ (i==0)
-           println("AlreadySelected Vector : " + alreadySelected)
+         if(Game.cardsOnTable.length != alreadySelected.length){
+           alreadySelected = Vector(true)
+           for (i <- 0 until Game.cardsOnTable.length -1)  alreadySelected = alreadySelected :+ false
+         }
+         println("AlreadySelected Vector : " + alreadySelected)
           
          //background color and window size
           g.setColor(new Color(73,159,104))
@@ -169,16 +180,21 @@ object GameGUI extends SimpleSwingApplication{
           g.drawImage(ImageIO.read(new File("p1.png")), 750, 200, 30,30, null)
         
          //draw cards on the table 
-          for(i <- 0 until image.length) {
+          try{for(i <- 0 until image.length) {
             g.drawImage(image(i), 290 + 100*i , 220,90 ,120,null)
             if (alreadySelected(i)){
               g.setColor(new Color(139,95,191))
               g.setStroke(new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND))
-              g.drawLine(290 + 100*i -5, 215 ,290 + 100*i + 95, 215 )
-              g.drawLine(290 + 100*i -5, 345 ,290 + 100*i + 95, 345 )
-              g.drawLine(290 + 100*i -5, 215 ,290 + 100*i -5, 345 )
-              g.drawLine(290 + 100*i + 95, 215 ,290 + 100*i + 95, 345 )
+              val x = 290
+              val y = 220
+              drawBorder(g,x,y,i)
+//              g.drawLine(290 + 100*i -5, 215 ,290 + 100*i + 95, 215 )
+//              g.drawLine(290 + 100*i -5, 345 ,290 + 100*i + 95, 345 )
+//              g.drawLine(290 + 100*i -5, 215 ,290 + 100*i -5, 345 )
+//              g.drawLine(290 + 100*i + 95, 215 ,290 + 100*i + 95, 345 )
             }
+          }}catch {
+            case e : IndexOutOfBoundsException => println(e)
           }
           //draw player's cards
           for(i <- 0 until currentPlayer.cardsInHand.size){
@@ -187,10 +203,13 @@ object GameGUI extends SimpleSwingApplication{
             if(i==playerSelection){
               g.setColor(Color.RED)
               g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND))
-              g.drawLine(290 + 100*i -5, 495 ,290 + 100*i + 95, 495 )
-              g.drawLine(290 + 100*i -5, 625 ,290 + 100*i + 95, 625 )
-              g.drawLine(290 + 100*i -5, 495 ,290 + 100*i -5, 625 )
-              g.drawLine(290 + 100*i + 95, 495 ,290 + 100*i + 95, 625 )
+              val x = 290
+              val y = 500
+              drawBorder(g,x,y,i)
+//              g.drawLine(290 + 100*i -5, 495 ,290 + 100*i + 95, 495 )
+//              g.drawLine(290 + 100*i -5, 625 ,290 + 100*i + 95, 625 )
+//              g.drawLine(290 + 100*i -5, 495 ,290 + 100*i -5, 625 )
+//              g.drawLine(290 + 100*i + 95, 495 ,290 + 100*i + 95, 625 )
             }
           }
       }
@@ -300,6 +319,16 @@ object GameGUI extends SimpleSwingApplication{
             }
            else if (e.point.x > 700 && e.point.x <832 && e.point.y > 570 && e.point.y < 622){
              println("Trail clicked!")
+             println("Current Player : " + currentPlayer)
+             println("Player Selection : "+ playerSelection  )
+            // Call the trail method
+             Game.trail(currentPlayer, currentPlayer.cardsInHand(playerSelection))
+             //update currentPlayer
+             currentPlayer = Game.nextPlayer(currentPlayer)
+             println("Next Player = " + currentPlayer)
+             //repaint()
+             this.revalidate()
+             this.repaint()
            }
            else if (e.point.x > 700 && e.point.x <832 && e.point.y > 515 && e.point.y < 560){
              println("Capture clicked!")
@@ -422,6 +451,7 @@ object GameGUI extends SimpleSwingApplication{
                                     println("Name entered " + playerNameVec)
                                    Game.newGame(compOpponent, playerNameVec)
                                    currentScreen.visible = false
+                                   println("Game players " + Game.players)
                                    currentPlayer = Game.players(0)
                                    gameScreen.visible = true
                                    gameScreen.revalidate()
