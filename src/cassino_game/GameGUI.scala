@@ -160,6 +160,14 @@ object GameGUI extends SimpleSwingApplication{
           g.drawString("Trail", 760, 605)
           g.drawRect(755,585,75,25)
           
+          g.setColor(new Color(12,116,137))
+          g.drawRect( 730 , 10, 250, 400)
+          g.setFont(new Font("Monospaced",Font.BOLD,32))
+          g.drawString("Score ", 800,50)
+          g.drawImage(ImageIO.read(new File("robot.png")), 750, 80, 30, 30,null)
+          g.drawImage(ImageIO.read(new File("p2.png")), 745, 130, 40,40,null)
+          g.drawImage(ImageIO.read(new File("p1.png")), 750, 200, 30,30, null)
+          
         
          //draw cards on the table 
           for(i <- 0 until image.length) {
