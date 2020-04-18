@@ -3,6 +3,7 @@ package cassino_game
 import scala.swing._
 import scala.swing.event._
 import java.io._
+import java.awt.BasicStroke
 import java.awt.Color
 import java.awt.Font
 import java.awt.Graphics2D
@@ -34,7 +35,7 @@ object GameGUI extends SimpleSwingApplication{
     }
   }
   
-  
+  var currentPlayer = new Player("")
   var players = 0 
   val okButton = new Button("OK")
   val enterNameButton = new Button("Next")
@@ -112,39 +113,187 @@ object GameGUI extends SimpleSwingApplication{
     
   var gameScreen =  new GamePanel 
   class GamePanel extends Panel{
-    //this.background = new Color(173,216,230) 
-    //this.contents += new Label("Game started!")
+
+     //state variable
       visible = false
-      var flag = false
-     def paintComp(g: Graphics2D) = {
-      g.setColor(new Color(73,159,104))
-      g.fillRect(0, 0, 1000, 750)
-      g.setBackground( new Color(173,230,216))
-      val image = Game.cardsOnTable.map(_.image)
-      val playerCards = Game.players(0).cardsInHand.map(_.image)
-      g.drawImage(ImageIO.read(new File("p2.png")), 190, 510, 50, 50,null)
-      g.setFont(new Font("SanSerif",Font.BOLD,15))
-      g.setColor(Color.BLACK) 
-     //  g.drawString("Hello",100,100)
-      g.drawString("Player 1", 190, 575)
-      for(i <- 0 until image.length){
-       g.drawImage(image(i), 290 + 100*i , 220,90 ,120,null)
-       g.drawImage(playerCards(i),290 + 100*i, 500, 90, 120 , null)}
+    // var playerIcon = ???
+     //current selection of cards 
+     var selectedCards = Vector[Card]() 
+     var alreadySelected = Vector[Boolean]()
+     //only the first card is selected initially
+     //card selected from hand of player
+     var playerSelection = 0
+     var flag = 0
+      
+    //showing the current board  
+     def paintComp(g: Graphics2D, n : Int) = {
+         if (alreadySelected.isEmpty) for (i <- 0 until Game.cardsOnTable.length) alreadySelected = alreadySelected :+ (i==0)
+           println("AlreadySelected Vector : " + alreadySelected)
+          
+         //background color and window size
+          g.setColor(new Color(73,159,104))
+          g.fillRect(0, 0, 1000, 750)
+          g.setBackground( new Color(173,230,216))
+          
+          //cards on the table and cards with certain player
+          val image = Game.cardsOnTable.map(_.image)
+          val playerCards = currentPlayer.cardsInHand.map(_.image)
+          
+          //player Icon
+          g.drawImage(ImageIO.read(new File("p2.png")), 190, 510, 50, 50,null)
+          //player Name
+          g.setFont(new Font("Serif",Font.BOLD,15))
+          g.setColor(Color.BLACK) 
+          g.drawString("Player 1", 190, 575)
+          //capture icon
+          g.drawImage(ImageIO.read(new File("captureIcon3.png")), 700,510,50,50, null)
+          g.setColor(Color.CYAN)
+          g.drawRect(755, 520, 95,25 )
+          //capture text
+          g.setFont(new Font("Monospaced",Font.BOLD,20))
+          g.drawString("Capture",760,540)
+         //trail icon
+          g.drawImage(ImageIO.read(new File("trailIcon.png")), 700, 570, 50,50, null )
+         //trail text
+          g.setColor(new Color(238,46,49))
+          g.setFont(new Font("Monospaced",Font.BOLD,20))
+          g.drawString("Trail", 760, 605)
+          g.drawRect(755,585,75,25)
+          
+        
+         //draw cards on the table 
+          for(i <- 0 until image.length) {
+            g.drawImage(image(i), 290 + 100*i , 220,90 ,120,null)
+            if (alreadySelected(i)){
+              g.setColor(new Color(139,95,191))
+              g.setStroke(new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND))
+              g.drawLine(290 + 100*i -5, 215 ,290 + 100*i + 95, 215 )
+              g.drawLine(290 + 100*i -5, 345 ,290 + 100*i + 95, 345 )
+              g.drawLine(290 + 100*i -5, 215 ,290 + 100*i -5, 345 )
+              g.drawLine(290 + 100*i + 95, 215 ,290 + 100*i + 95, 345 )
+            }
+          }
+          //draw player's cards
+          for(i <- 0 until currentPlayer.cardsInHand.size){
+            g.drawImage(playerCards(i),290 + 100*i, 500, 90, 120 , null)
+            //draw a border if it is the selection
+            if(i==playerSelection){
+              g.setColor(Color.RED)
+              g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND))
+              g.drawLine(290 + 100*i -5, 495 ,290 + 100*i + 95, 495 )
+              g.drawLine(290 + 100*i -5, 625 ,290 + 100*i + 95, 625 )
+              g.drawLine(290 + 100*i -5, 495 ,290 + 100*i -5, 625 )
+              g.drawLine(290 + 100*i + 95, 495 ,290 + 100*i + 95, 625 )
+            }
+          }
       }
       override def paintComponent(g : Graphics2D) ={
-        if (!flag) paintComp(g)
-        else g.drawString("Hello",500,500)
+         paintComp(g,playerSelection)
       }
 //       println(this)
-       this.listenTo(this.mouse.clicks,this.mouse.moves)
-       this.reactions += {
-      case e : MouseClicked => if(e.point.x >= 290 && e.point.x < 380 && e.point.y > 500 && e.point.y < 620) {
-        flag = true
-        this.revalidate()
-        this.repaint()
-        println("Hello it's working")
-      }else println(e.point)
-       }   
+     this.listenTo(this.mouse.clicks,this.mouse.moves)
+     this.reactions += {
+       //when mouse is clicked
+        case e : MouseClicked =>
+          //CASE 1 : Player selects
+          if(e.point.x >= 290 && e.point.x < 380 && e.point.y > 500 && e.point.y < 620) {
+            if (currentPlayer.cardsInHand.isDefinedAt(0) ){
+                //first card is selected from currentPlayer
+                //added toselection
+                playerSelection = 0
+                //draw selection1
+                this.revalidate()
+                this.repaint()
+                println("Hello it's working")
+            }
+          }   
+         // second card clicked, draw selection
+             else if(e.point.x >= 390 && e.point.x < 480 && e.point.y > 500 && e.point.y < 620){
+              if (currentPlayer.cardsInHand.isDefinedAt(1) ){
+                    //second card is selected from currentPlayer
+                    //added toselection
+                    playerSelection = 1
+                    //draw selection1
+                    this.revalidate()
+                    this.repaint()
+                    println("Hello it's working again")
+                }
+             }
+              else if(e.point.x >= 490 && e.point.x < 580 && e.point.y > 500 && e.point.y < 620){
+                if (currentPlayer.cardsInHand.isDefinedAt(2) ){
+                    //third card is selected from currentPlayer
+                    //added toselection
+                    playerSelection = 2
+                    //draw selection1
+                    this.revalidate()
+                    this.repaint()
+                    println("Hello it's working again")
+                }
+            }
+             else if(e.point.x >= 590 && e.point.x < 680 && e.point.y > 500 && e.point.y < 620){
+                if (currentPlayer.cardsInHand.isDefinedAt(3) ){
+                    //fourth card is selected from currentPlayer
+                    //added toselection
+                    playerSelection = 3
+                    //draw selection1
+                    this.revalidate()
+                    this.repaint()
+                    println("Hello it's working again")
+                }
+            }
+          
+          
+            else if(e.point.x >= 290 && e.point.x < 380 && e.point.y > 220 && e.point.y < 340){
+              //if there is a card  
+              if (Game.cardsOnTable.isDefinedAt(0) ){
+                    if(alreadySelected(0)) alreadySelected = alreadySelected.updated(0, false) 
+                    else alreadySelected  = alreadySelected.updated(0, true)
+                    //fourth card is selected from currentPlayer
+                    //draw selection1
+                    this.revalidate()
+                    this.repaint()
+                    println("Hello it's working again")
+                }
+            } 
+           else if(e.point.x >= 390 && e.point.x < 480 && e.point.y > 220 && e.point.y < 340){
+              //if there is a card  
+              if (Game.cardsOnTable.isDefinedAt(1) ){
+                    if(alreadySelected(1)) alreadySelected = alreadySelected.updated(1, false) 
+                    else alreadySelected  = alreadySelected.updated(1, true)
+                    //fourth card is selected from currentPlayer
+                    //draw selection1
+                    this.revalidate()
+                    this.repaint()
+                    println("Hello it's working again")
+                }
+            }
+           else if(e.point.x >= 490 && e.point.x < 580 && e.point.y > 220 && e.point.y < 340){
+              //if there is a card  
+              if (Game.cardsOnTable.isDefinedAt(2) ){
+                    if(alreadySelected(2)) alreadySelected = alreadySelected.updated(2, false) 
+                    else alreadySelected  = alreadySelected.updated(2, true)
+                    //fourth card is selected from currentPlayer
+                    //draw selection1
+                    this.revalidate()
+                    this.repaint()
+                    println("Hello it's working again")
+                }
+            } 
+           else if(e.point.x >= 590 && e.point.x < 680 && e.point.y > 220 && e.point.y < 340){
+              //if there is a card  
+              if (Game.cardsOnTable.isDefinedAt(3) ){
+                    if(alreadySelected(3)) alreadySelected = alreadySelected.updated(3, false) 
+                    else alreadySelected  = alreadySelected.updated(3, true)
+                    //fourth card is selected from currentPlayer
+                    //draw selection1
+                    this.revalidate()
+                    this.repaint()
+                    println("Hello it's working again")
+                }
+            } 
+            else println(e.point)
+     }
+        
 
   
   }
@@ -260,6 +409,7 @@ object GameGUI extends SimpleSwingApplication{
                                     println("Name entered " + playerNameVec)
                                    Game.newGame(compOpponent, playerNameVec)
                                    currentScreen.visible = false
+                                   currentPlayer = Game.players(0)
                                    gameScreen.visible = true
                                    gameScreen.revalidate()
                                    gameScreen.repaint()
