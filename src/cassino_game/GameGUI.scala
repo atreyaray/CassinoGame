@@ -3,10 +3,7 @@ package cassino_game
 import scala.swing._
 import scala.swing.event._
 import java.io._
-import java.awt.BasicStroke
-import java.awt.Color
-import java.awt.Font
-import java.awt.Graphics2D
+import java.awt.{Color,Font,Graphics2D,BasicStroke}
 import javax.imageio.ImageIO
 import javax.swing.SwingUtilities._
 
@@ -151,11 +148,15 @@ object GameGUI extends SimpleSwingApplication{
           val playerCards = currentPlayer.cardsInHand.map(_.image)
           
           //player Icon
-          g.drawImage(ImageIO.read(new File("p2.png")), 190, 510, 50, 50,null)
+          var playerIcons = Vector[java.awt.image.BufferedImage]()
+          val currentIndex = Game.players.indexOf(currentPlayer)
+          for (i <- 0 until Game.players.length) playerIcons = playerIcons :+ ImageIO.read(new File ("p" + (i+1) + ".png"))
+          g.drawImage(playerIcons(currentIndex), 190, 510, 50, 50,null)
           //player Name
           g.setFont(new Font("Serif",Font.BOLD,15))
           g.setColor(Color.BLACK) 
-          g.drawString("Player 1", 190, 575)
+          g.drawString("Player " + (currentIndex+1), 190, 575)
+          
           //capture icon
           g.drawImage(ImageIO.read(new File("captureIcon3.png")), 700,510,50,50, null)
           g.setColor(Color.CYAN)
@@ -180,22 +181,22 @@ object GameGUI extends SimpleSwingApplication{
           g.drawImage(ImageIO.read(new File("p1.png")), 750, 200, 30,30, null)
         
          //draw cards on the table 
-          try{for(i <- 0 until image.length) {
-            g.drawImage(image(i), 290 + 100*i , 220,90 ,120,null)
+         for(i <- 0 until image.length) {
+            if (i < 4) g.drawImage(image(i), 290 + 100*i , 300,90 ,120,null)
+            else g.drawImage(image(i), 290 + 100*(3-i) , 300,90 ,120,null)
             if (alreadySelected(i)){
               g.setColor(new Color(139,95,191))
               g.setStroke(new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND))
               val x = 290
-              val y = 220
-              drawBorder(g,x,y,i)
+              val y = 300
+              if (i > 3)drawBorder(g,x,y,3-i)
+              else drawBorder(g,x,y,i)
 //              g.drawLine(290 + 100*i -5, 215 ,290 + 100*i + 95, 215 )
 //              g.drawLine(290 + 100*i -5, 345 ,290 + 100*i + 95, 345 )
 //              g.drawLine(290 + 100*i -5, 215 ,290 + 100*i -5, 345 )
 //              g.drawLine(290 + 100*i + 95, 215 ,290 + 100*i + 95, 345 )
             }
-          }}catch {
-            case e : IndexOutOfBoundsException => println(e)
-          }
+         }
           //draw player's cards
           for(i <- 0 until currentPlayer.cardsInHand.size){
             g.drawImage(playerCards(i),290 + 100*i, 500, 90, 120 , null)
@@ -203,7 +204,7 @@ object GameGUI extends SimpleSwingApplication{
             if(i==playerSelection){
               g.setColor(Color.RED)
               g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND))
-              val x = 290
+              val x = 290 
               val y = 500
               drawBorder(g,x,y,i)
 //              g.drawLine(290 + 100*i -5, 495 ,290 + 100*i + 95, 495 )
@@ -269,7 +270,7 @@ object GameGUI extends SimpleSwingApplication{
             }
           
           //CASE where cards on table are selected.
-            else if(e.point.x >= 290 && e.point.x < 380 && e.point.y > 220 && e.point.y < 340){
+            else if(e.point.x >= 290 && e.point.x < 380 && e.point.y > 300  && e.point.y < 420){
               //if there is a card  
               if (Game.cardsOnTable.isDefinedAt(0) ){
                     if(alreadySelected(0)) alreadySelected = alreadySelected.updated(0, false) 
@@ -281,7 +282,7 @@ object GameGUI extends SimpleSwingApplication{
                     println("Hello it's working again")
                 }
             } 
-           else if(e.point.x >= 390 && e.point.x < 480 && e.point.y > 220 && e.point.y < 340){
+           else if(e.point.x >= 390 && e.point.x < 480 && e.point.y > 300 && e.point.y < 420){
               //if there is a card  
               if (Game.cardsOnTable.isDefinedAt(1) ){
                     if(alreadySelected(1)) alreadySelected = alreadySelected.updated(1, false) 
@@ -293,7 +294,7 @@ object GameGUI extends SimpleSwingApplication{
                     println("Hello it's working again")
                 }
             }
-           else if(e.point.x >= 490 && e.point.x < 580 && e.point.y > 220 && e.point.y < 340){
+           else if(e.point.x >= 490 && e.point.x < 580 && e.point.y > 300 && e.point.y < 420){
               //if there is a card  
               if (Game.cardsOnTable.isDefinedAt(2) ){
                     if(alreadySelected(2)) alreadySelected = alreadySelected.updated(2, false) 
@@ -305,11 +306,35 @@ object GameGUI extends SimpleSwingApplication{
                     println("Hello it's working again")
                 }
             } 
-           else if(e.point.x >= 590 && e.point.x < 680 && e.point.y > 220 && e.point.y < 340){
+           else if(e.point.x >= 590 && e.point.x < 680 && e.point.y > 300 && e.point.y < 420){
               //if there is a card  
               if (Game.cardsOnTable.isDefinedAt(3) ){
                     if(alreadySelected(3)) alreadySelected = alreadySelected.updated(3, false) 
                     else alreadySelected  = alreadySelected.updated(3, true)
+                    //fourth card is selected from currentPlayer
+                    //draw selection1
+                    this.revalidate()
+                    this.repaint()
+                    println("Hello it's working again")
+                }
+            }
+           else if(e.point.x >= 190 && e.point.x < 280 && e.point.y > 300 && e.point.y < 420){
+              //if there is a card  
+              if (Game.cardsOnTable.isDefinedAt(4) ){
+                    if(alreadySelected(4)) alreadySelected = alreadySelected.updated(4, false) 
+                    else alreadySelected  = alreadySelected.updated(4, true)
+                    //fourth card is selected from currentPlayer
+                    //draw selection1
+                    this.revalidate()
+                    this.repaint()
+                    println("Hello it's working again")
+                }
+            }
+           else if(e.point.x >= 90 && e.point.x < 180 && e.point.y > 300 && e.point.y < 420){
+              //if there is a card  
+              if (Game.cardsOnTable.isDefinedAt(5) ){
+                    if(alreadySelected(5)) alreadySelected = alreadySelected.updated(5, false) 
+                    else alreadySelected  = alreadySelected.updated(5, true)
                     //fourth card is selected from currentPlayer
                     //draw selection1
                     this.revalidate()
@@ -323,6 +348,8 @@ object GameGUI extends SimpleSwingApplication{
              println("Player Selection : "+ playerSelection  )
             // Call the trail method
              Game.trail(currentPlayer, currentPlayer.cardsInHand(playerSelection))
+             Game.dealOne(currentPlayer)
+             println(Game.toString())
              //update currentPlayer
              currentPlayer = Game.nextPlayer(currentPlayer)
              println("Next Player = " + currentPlayer)
@@ -332,6 +359,27 @@ object GameGUI extends SimpleSwingApplication{
            }
            else if (e.point.x > 700 && e.point.x <832 && e.point.y > 515 && e.point.y < 560){
              println("Capture clicked!")
+             //gather data
+             val pCard = currentPlayer.cardsInHand(playerSelection)
+             val combo = alreadySelected.zip(Game.cardsOnTable).filter(_._1).map(_._2)
+             //checkcapture
+             if (Game.checkCapture(currentPlayer, pCard, combo)){
+               Game.executeCapture(currentPlayer, pCard, combo)
+               Game.dealOne(currentPlayer)
+               println(Game.toString())
+               currentPlayer = Game.nextPlayer(currentPlayer)
+             }
+             else {
+               println("Player's choice : " + pCard)
+               println("Card from table : " + combo)
+               println("Condition for move was : " + Game.checkCapture(currentPlayer, pCard, combo))
+               println("Move failed!")
+             }
+             //execute capture or failed, 
+             //if successful update currentPlayer
+             this.revalidate()
+             this.repaint()
+             //repaint
            }
             else println(e.point)
      }
