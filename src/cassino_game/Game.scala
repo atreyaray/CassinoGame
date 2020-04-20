@@ -27,7 +27,7 @@ object Game {//extends App {
     lastCapturer  = None
     isWon = false
     //add players
-    if (comp) this.addPlayers(("Comp" +: playerNames))
+    if (comp) this.addPlayers(("Computer" +: playerNames))
     else this.addPlayers(playerNames)
     shuffle 
     deal
@@ -137,7 +137,7 @@ object Game {//extends App {
   }
   
   //computer generated moves
-  def optimalMove(p1: Player)={
+  def optimalMove(p1: Player) : (Card, Option[Vector[Card]])={
     
     //combinations of possible combos to capture
     var combinations = Iterator[Vector[Card]]()
@@ -181,7 +181,11 @@ object Game {//extends App {
    }
       println("Best Choice is : " + bestChoice)
       //if there is a bestChoice then execute it else trail
-      if (bestChoice._2.isDefined) this.executeCapture(p1, bestChoice._2.get.last , bestChoice._2.get.dropRight(1))
+      if (bestChoice._2.isDefined) {
+        this.executeCapture(p1, bestChoice._2.get.last , bestChoice._2.get.dropRight(1))
+        // returns (card captured, Some(combo))
+        return (bestChoice._2.get.last , Some(bestChoice._2.get.dropRight(1)))
+      }
       else{
         //iterate through all the cards of the player
         var minVal = 0
@@ -194,9 +198,8 @@ object Game {//extends App {
             minVal = value
           }
         }
-        try{this.trail(p1, min.get)}
-        catch{case e : NoSuchElementException => " error thrown"
-        case other => println(other)}
+       this.trail(p1, min.get)
+       return (min.get, None)
     }
   }
   
