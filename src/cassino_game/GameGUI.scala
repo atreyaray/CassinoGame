@@ -200,14 +200,6 @@ object GameGUI extends SimpleSwingApplication{
               g.drawString(Game.players(i).points.toString(),850, 100+50*i)
           }
           
-//          g.drawImage(ImageIO.read(new File("p2.png")), 745, 130, 30,30,null)
-//          g.drawString(Game.players(1).points.toString(),850, 160)
-//          g.drawImage(ImageIO.read(new File("p1.png")), 750, 180, 30,30, null)
-//          //g.drawString(Game.players(2).points.toString(),850, 220)
-//          g.drawImage(ImageIO.read(new File("p3.png")), 750, 230, 30,30, null)
-//          //g.drawString(Game.players(3).points.toString(),850, 270)
-//          g.drawImage(ImageIO.read(new File("p4.png")), 750, 280, 30,30, null)
-//         // g.drawString(Game.players(4).points.toString(),850, 160)
         
          //draw cards on the table 
          for(i <- 0 until image.length) {
@@ -256,23 +248,7 @@ object GameGUI extends SimpleSwingApplication{
            currentPlayer = Game.nextPlayer(currentPlayer)
            moveOn = true
         }
-//               if (combo.isDefined){
-//                 //update selections
-//                 alreadySelected = Array.fill[Boolean](Game.cardsOnTable.length)(false).toVector
-//                 for (i <-  combo.get){
-//                    val index = Game.cardsOnTable.filter(i.name == _.name).map(Game.cards.indexOf(_))
-//                    println("Index " + index)
-//                    if (index(0) < 4 ) g.drawImage(i.image, 290 + 100*index(0) , 300,90 ,120,null)
-//                    else g.drawImage(i.image, 290 + 100*(3-index(0)) , 300,90 ,120,null)
-//                 }
-//               }              
-               
-               
-    //              g.drawLine(290 + 100*i -5, 495 ,290 + 100*i + 95, 495 )
-    //              g.drawLine(290 + 100*i -5, 625 ,290 + 100*i + 95, 625 )
-    //              g.drawLine(290 + 100*i -5, 495 ,290 + 100*i -5, 625 )
-    //              g.drawLine(290 + 100*i + 95, 495 ,290 + 100*i + 95, 625 )
-          
+         
         else{
               //draw player's cards
               for(i <- 0 until currentPlayer.cardsInHand.size){

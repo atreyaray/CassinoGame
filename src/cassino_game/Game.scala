@@ -88,9 +88,10 @@ object Game {//extends App {
     //gives special value if card is special, value otherwise
     val pcVal = playerCard.specialValue.getOrElse(playerCard.value)
     //filters single cards with same value as playerCard
+    if (!combo.filter(_.value == pcVal).isEmpty) ans = true
     val filteredCombo = combo.filter(_.value != pcVal)
     //checks if a 4 card combo is left and if it's sum = pcVal
-    if(filteredCombo.length ==4 && filteredCombo.map(_.value).sum == pcVal) ans = true
+    if(filteredCombo.length == 4 && filteredCombo.map(_.value).sum == pcVal) ans = true
     //checks if a 3 card combo is left and if it's sum = pcVal
     else if(filteredCombo.length == 3 && filteredCombo.map(_.value).sum == pcVal) ans = true
     //checks if a 2 card combo is left and if it's sum = pcVal
@@ -103,7 +104,6 @@ object Game {//extends App {
       import scala.collection.mutable.Buffer
       var choicesBuf = Buffer[Set[Card]]()
       filteredCombo.combinations(2).filter(n => n.map(_.value).sum == pcVal).map(_.toSet).copyToBuffer(choicesBuf)
-      
       for (i <- 0 until choicesBuf.length - 1){
         for (j <- i+1 until choicesBuf.length){
           //checking every combination of 2 member groups if they have distinct elements
@@ -182,10 +182,9 @@ object Game {//extends App {
       println("Best Choice is YOLO: " + bestChoice)
       //if there is a bestChoice then execute it else trail
       if (bestChoice._2.isDefined) {
-        println("ENTERS HERE" + bestChoice._2.isDefined)
         this.executeCapture(p1, bestChoice._2.get.last , bestChoice._2.get.dropRight(1))
         // returns (card captured, Some(combo))
-        println("ENTERS HERE TOO " + bestChoice._2)
+        println("ENTERS HERE TOO " +bestChoice._1 + ":" + bestChoice._2)
         return (bestChoice._2.get.last , Some(bestChoice._2.get.dropRight(1)))
       }
       else{

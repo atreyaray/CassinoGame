@@ -11,5 +11,13 @@ class IoTest extends FlatSpec{
     val fh = new FileHandler
     assert(fh.readFile("testIO_1.txt").length != 0)
   }
+  
+  "" should "" in {
+    val card  = new Card("sa")
+    println(card.image)
+  }
+  "checl" should "" in {
+    this.assertThrows(Game.newGame(false, Vector()))
+  }
 }
 
