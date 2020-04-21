@@ -50,6 +50,7 @@ object GameGUI extends SimpleSwingApplication{
   var compOpponent = false
   val instructionMenuItem = new MenuItem("Instructions")
   val newGameMenuItem = new MenuItem("New Game")
+  var moveOn = false
   
   var topPanel = new FlowPanel{
                     contents += new Label("Cassino: New Game"){
@@ -110,7 +111,6 @@ object GameGUI extends SimpleSwingApplication{
     
   var gameScreen =  new GamePanel 
   class GamePanel extends Panel{
-
      //state variable
       visible = false
     // var playerIcon = ???
@@ -136,6 +136,7 @@ object GameGUI extends SimpleSwingApplication{
            alreadySelected = Vector(true)
            for (i <- 0 until Game.cardsOnTable.length -1)  alreadySelected = alreadySelected :+ false
          }
+         if (!Game.players.isEmpty && currentPlayer.name == "Computer") alreadySelected = Array.fill[Boolean](Game.cardsOnTable.length)(false).toVector
          println("AlreadySelected Vector : " + alreadySelected)
           
          //background color and window size
@@ -150,12 +151,20 @@ object GameGUI extends SimpleSwingApplication{
           //player Icon
           var playerIcons = Vector[java.awt.image.BufferedImage]()
           val currentIndex = Game.players.indexOf(currentPlayer)
-          for (i <- 0 until Game.players.length) playerIcons = playerIcons :+ ImageIO.read(new File ("p" + (i+1) + ".png"))
+          for (i <- 0 until Game.players.length) {
+            if (Game.players(0).name != "Computer")  playerIcons = playerIcons :+ ImageIO.read(new File ("p" + (i+1) + ".png"))
+            else {
+              if (i == 0) playerIcons = playerIcons :+ ImageIO.read(new File("robot.png"))
+              else playerIcons = playerIcons :+ ImageIO.read(new File("p" + i + ".png"))
+            }
+              
+          }
           g.drawImage(playerIcons(currentIndex), 190, 510, 50, 50,null)
+          
           //player Name
           g.setFont(new Font("Serif",Font.BOLD,15))
           g.setColor(Color.BLACK) 
-          g.drawString("Player " + (currentIndex+1), 190, 575)
+          g.drawString("Player " + (currentIndex+1) + " : " + currentPlayer.name, 145, 585)
           
           //capture icon
           g.drawImage(ImageIO.read(new File("captureIcon3.png")), 700,510,50,50, null)
@@ -176,9 +185,29 @@ object GameGUI extends SimpleSwingApplication{
           g.drawRect( 730 , 10, 250, 400)
           g.setFont(new Font("Monospaced",Font.BOLD,32))
           g.drawString("Score ", 800,50)
-          g.drawImage(ImageIO.read(new File("robot.png")), 750, 80, 30, 30,null)
-          g.drawImage(ImageIO.read(new File("p2.png")), 745, 130, 40,40,null)
-          g.drawImage(ImageIO.read(new File("p1.png")), 750, 200, 30,30, null)
+          g.setFont(new Font("Monospaced",Font.BOLD,15))
+          g.setColor(Color.BLACK)
+          
+         //Points
+          var offSet = 0
+          if (Game.players(0).name == "Computer"){
+            offSet = 1
+            g.drawImage(ImageIO.read(new File("robot.png")), 745, 80, 30, 30,null)
+            g.drawString(Game.players(0).points.toString(),850, 100)
+          }
+          for(i <- offSet until Game.players.length){
+              g.drawImage(ImageIO.read(new File("p"+(i+1-offSet) +".png")), 745, 80 + 50*i, 30,30,null)
+              g.drawString(Game.players(i).points.toString(),850, 100+50*i)
+          }
+          
+//          g.drawImage(ImageIO.read(new File("p2.png")), 745, 130, 30,30,null)
+//          g.drawString(Game.players(1).points.toString(),850, 160)
+//          g.drawImage(ImageIO.read(new File("p1.png")), 750, 180, 30,30, null)
+//          //g.drawString(Game.players(2).points.toString(),850, 220)
+//          g.drawImage(ImageIO.read(new File("p3.png")), 750, 230, 30,30, null)
+//          //g.drawString(Game.players(3).points.toString(),850, 270)
+//          g.drawImage(ImageIO.read(new File("p4.png")), 750, 280, 30,30, null)
+//         // g.drawString(Game.players(4).points.toString(),850, 160)
         
          //draw cards on the table 
          for(i <- 0 until image.length) {
@@ -191,39 +220,105 @@ object GameGUI extends SimpleSwingApplication{
               val y = 300
               if (i > 3)drawBorder(g,x,y,3-i)
               else drawBorder(g,x,y,i)
-//              g.drawLine(290 + 100*i -5, 215 ,290 + 100*i + 95, 215 )
-//              g.drawLine(290 + 100*i -5, 345 ,290 + 100*i + 95, 345 )
-//              g.drawLine(290 + 100*i -5, 215 ,290 + 100*i -5, 345 )
-//              g.drawLine(290 + 100*i + 95, 215 ,290 + 100*i + 95, 345 )
             }
          }
-          //draw player's cards
-          for(i <- 0 until currentPlayer.cardsInHand.size){
-            g.drawImage(playerCards(i),290 + 100*i, 500, 90, 120 , null)
-            //draw a border if it is the selection
-            if(i==playerSelection){
-              g.setColor(Color.RED)
-              g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND))
-              val x = 290 
-              val y = 500
-              drawBorder(g,x,y,i)
-//              g.drawLine(290 + 100*i -5, 495 ,290 + 100*i + 95, 495 )
-//              g.drawLine(290 + 100*i -5, 625 ,290 + 100*i + 95, 625 )
-//              g.drawLine(290 + 100*i -5, 495 ,290 + 100*i -5, 625 )
-//              g.drawLine(290 + 100*i + 95, 495 ,290 + 100*i + 95, 625 )
-            }
+         
+         println("Name  " + (currentPlayer.name== "Computer").toString())
+         if (currentPlayer.name == "Computer"){
+           //Painting out all the cardbacks 
+           for(i <- 0 until currentPlayer.cardsInHand.size){
+               val cardImage = ImageIO.read(new File("cardBack.png"))
+               g.drawImage(cardImage,290 + 100*i, 500, 90, 120 , null) 
+             }
+           //save cards on the table
+           val table = Game.cardsOnTable
+           //checkMove
+           println("Executed now")
+           println("Current Player name : " + currentPlayer)
+           val (card, combo) = Game.optimalMove(currentPlayer)
+           if (combo.isDefined){
+           //update selections
+           alreadySelected = Array.fill[Boolean](Game.cardsOnTable.length)(false).toVector
+           for (i <-  combo.get){
+                   //indices to be highlighted
+                    val index = table.filter(i.name == _.name).map(table.indexOf(_))
+                    println("Index " + index)
+                    g.setColor(new Color(139,95,191))
+                    g.setStroke(new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND))                    
+                    if (index(0) > 3)drawBorder(g,290,300,3-index(0))
+                    else drawBorder(g,290,300,index(0))
+                 }
+           }
+           //card chosen to capture or trail    
+           g.drawImage(card.image, 290, 500,90,120, null)
+           g.setColor(Color.RED)
+           drawBorder(g,290,500,0)
+           currentPlayer = Game.nextPlayer(currentPlayer)
+           moveOn = true
+        }
+//               if (combo.isDefined){
+//                 //update selections
+//                 alreadySelected = Array.fill[Boolean](Game.cardsOnTable.length)(false).toVector
+//                 for (i <-  combo.get){
+//                    val index = Game.cardsOnTable.filter(i.name == _.name).map(Game.cards.indexOf(_))
+//                    println("Index " + index)
+//                    if (index(0) < 4 ) g.drawImage(i.image, 290 + 100*index(0) , 300,90 ,120,null)
+//                    else g.drawImage(i.image, 290 + 100*(3-index(0)) , 300,90 ,120,null)
+//                 }
+//               }              
+               
+               
+    //              g.drawLine(290 + 100*i -5, 495 ,290 + 100*i + 95, 495 )
+    //              g.drawLine(290 + 100*i -5, 625 ,290 + 100*i + 95, 625 )
+    //              g.drawLine(290 + 100*i -5, 495 ,290 + 100*i -5, 625 )
+    //              g.drawLine(290 + 100*i + 95, 495 ,290 + 100*i + 95, 625 )
+          
+        else{
+              //draw player's cards
+              for(i <- 0 until currentPlayer.cardsInHand.size){
+                g.drawImage(playerCards(i),290 + 100*i, 500, 90, 120 , null)
+                //draw a border if it is the selection
+                if(i==playerSelection){
+                  g.setColor(Color.RED)
+                  g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND))
+                  val x = 290 
+                  val y = 500
+                  drawBorder(g,x,y,i)
+                }
           }
+        }
+          
+         if (!Game.isWon && !Game.players.isEmpty && Game.players.map(_.cardsInHand.length).sum == 0){
+            //all existing cards on deck go to lastCapturer
+            Game.lastCapturer.getOrElse(null).capture(Game.cardsOnTable)
+            //update cardsOnTable
+            Game.cardsOnTable = Vector[Card]()
+            //calculate point from the round
+            Game.calculatePoints
+            //show points
+            Game.players.foreach(n => print("" + n.name + " " +  n.points + " "))
+            Game.isWon = true
+            this.revalidate()
+            this.repaint()
+         }  
       }
+      
+        
+     
       override def paintComponent(g : Graphics2D) ={
-         paintComp(g,playerSelection)
+          paintComp(g,playerSelection)
       }
 //       println(this)
      this.listenTo(this.mouse.clicks,this.mouse.moves)
      this.reactions += {
        //when mouse is clicked
         case e : MouseClicked =>
+          if (moveOn){
+            moveOn = false
+            this.repaint()
+          }
           //CASE 1 : Player selects
-          if(e.point.x >= 290 && e.point.x < 380 && e.point.y > 500 && e.point.y < 620) {
+          else if(e.point.x >= 290 && e.point.x < 380 && e.point.y > 500 && e.point.y < 620) {
             if (currentPlayer.cardsInHand.isDefinedAt(0) ){
                 //first card is selected from currentPlayer
                 //added toselection
@@ -364,6 +459,7 @@ object GameGUI extends SimpleSwingApplication{
              val combo = alreadySelected.zip(Game.cardsOnTable).filter(_._1).map(_._2)
              //checkcapture
              if (Game.checkCapture(currentPlayer, pCard, combo)){
+               Game.lastCapturer = Some(currentPlayer)
                Game.executeCapture(currentPlayer, pCard, combo)
                Game.dealOne(currentPlayer)
                println(Game.toString())
@@ -551,7 +647,5 @@ object GameGUI extends SimpleSwingApplication{
     centerOnScreen
   }
   top.visible = true
-  
-  
-  
+   
 }

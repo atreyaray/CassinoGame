@@ -179,11 +179,13 @@ object Game {//extends App {
         //if the move is not possible then move on
       } 
    }
-      println("Best Choice is : " + bestChoice)
+      println("Best Choice is YOLO: " + bestChoice)
       //if there is a bestChoice then execute it else trail
       if (bestChoice._2.isDefined) {
+        println("ENTERS HERE" + bestChoice._2.isDefined)
         this.executeCapture(p1, bestChoice._2.get.last , bestChoice._2.get.dropRight(1))
         // returns (card captured, Some(combo))
+        println("ENTERS HERE TOO " + bestChoice._2)
         return (bestChoice._2.get.last , Some(bestChoice._2.get.dropRight(1)))
       }
       else{
