@@ -245,6 +245,7 @@ object GameGUI extends SimpleSwingApplication{
            g.drawImage(card.image, 290, 500,90,120, null)
            g.setColor(Color.RED)
            drawBorder(g,290,500,0)
+           Game.dealOne(currentPlayer)
            currentPlayer = Game.nextPlayer(currentPlayer)
            moveOn = true
         }

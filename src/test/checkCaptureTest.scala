@@ -4,21 +4,28 @@ import org.scalatest._
 import cassino_game._
 
 class checkCaptureTest extends FlatSpec{
+  
+  "A possible 2 member move with 1 card on the table - 3" should "be approved" in {
+    val boardCards = Vector("h8","s7","c3").map(new Card(_))
+    val pc = new Card("d7")
+    assert(Game.checkCapture(new Player("Atreya"), pc, boardCards) == false)
+  }
+  
   "A possible 2 member move with 1 card on the table " should "be approved" in {
     val boardCards = Vector("s5").map(new Card(_))
     val pc = new Card("d5")
     assert(Game.checkCapture(new Player("Atreya"), pc, boardCards) == true)
   }
-  "A possible 2 member move with 3 card on the table " should "be approved" in {
+  "A possible 2 member move with 3 card on the table " should "not be approved" in {
     val boardCards = Vector("s5","d7","hj","sa").map(new Card(_))
     val pc = new Card("d5")
-    assert(Game.checkCapture(new Player("Atreya"), pc, boardCards) == true)
+    assert(Game.checkCapture(new Player("Atreya"), pc, boardCards) == false)
   }
   
-  "A possible 2 member move with 4 cards on the table " should "be approved" in {
+  "A possible 2 member move with 4 cards on the table " should "not be approved" in {
     val boardCards = Vector("s8","d9","c4","s3").map(new Card(_))
     val pc = new Card("h4")
-    assert(Game.checkCapture(new Player("Atreya"), pc, boardCards) == true)
+    assert(Game.checkCapture(new Player("Atreya"), pc, boardCards) == false)
   }
   
   "A possible 2 member move" should "be approved " in {

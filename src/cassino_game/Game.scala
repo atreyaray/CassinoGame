@@ -88,7 +88,6 @@ object Game {//extends App {
     //gives special value if card is special, value otherwise
     val pcVal = playerCard.specialValue.getOrElse(playerCard.value)
     //filters single cards with same value as playerCard
-    if (!combo.filter(_.value == pcVal).isEmpty) ans = true
     val filteredCombo = combo.filter(_.value != pcVal)
     //checks if a 4 card combo is left and if it's sum = pcVal
     if(filteredCombo.length == 4 && filteredCombo.map(_.value).sum == pcVal) ans = true
@@ -143,6 +142,7 @@ object Game {//extends App {
     var combinations = Iterator[Vector[Card]]()
     for (i <- 1 to cardsOnTable.length)  combinations = combinations ++ this.cardsOnTable.combinations(i)
     
+     //bestChoice stored as (score, combo)
      var bestChoice : (Int, Option[Vector[Card]])= (0, None)
     
     //check all the combinations 
@@ -153,9 +153,9 @@ object Game {//extends App {
       var score = 0
       //iterate through all player cards
       for (i <- 0 until p1.cardsInHand.length){
-        
         //check if move is possible with this combination and this player cards
         if(checkCapture(p1, p1.cardsInHand(i), choice)){
+          println("Now checking " + p1.name + " with " + p1.cardsInHand(i) + " choice " + choice + "\n")
           //check d10
           if ( (choice :+ p1.cardsInHand(i)).exists(_.name == "d10") ) score += 2
           //check sweep
@@ -164,7 +164,9 @@ object Game {//extends App {
           if ( (choice :+ p1.cardsInHand(i)).exists(_.value == 1) ) score +=  (choice :+ p1.cardsInHand(i)).filter(_.value == 1).length
           //check s2
           if ( (choice :+ p1.cardsInHand(i)).exists(_.name == "s2") ) score += 1
-        
+          //*********************test**********************
+          println(score)
+          
           //check score against bestChoice
           if(bestChoice._2.isDefined && score > bestChoice._1)
             bestChoice = (score, Some(choice :+ p1.cardsInHand(i)))
@@ -175,11 +177,12 @@ object Game {//extends App {
           else {
             if (bestChoice._1 == 0 && choice.length +1 > bestChoice._2.size ) bestChoice = (0,Some(choice :+ p1.cardsInHand(i)))
           }
+          println("Best Choice uptill now  " + bestChoice._2)
         }
         //if the move is not possible then move on
       } 
    }
-      println("Best Choice is YOLO: " + bestChoice)
+      println("Best Choice is : " + bestChoice)
       //if there is a bestChoice then execute it else trail
       if (bestChoice._2.isDefined) {
         this.executeCapture(p1, bestChoice._2.get.last , bestChoice._2.get.dropRight(1))
@@ -189,7 +192,7 @@ object Game {//extends App {
       }
       else{
         //iterate through all the cards of the player
-        var minVal = 0
+        var minVal = 1000
         var min : Option[Card] = None
         for (i <- 0 until p1.cardsInHand.length){
           //choose the lowest valued card (ie. choose special values, if it is a normal card then choose normal value instead)
