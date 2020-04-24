@@ -30,6 +30,7 @@ object GameGUI extends SimpleSwingApplication{
   val newGameMenuItem = new MenuItem("New Game")
   var moveOn = false
   var turnChange = false
+  var winner = ""
   
   
 
@@ -57,12 +58,12 @@ object GameGUI extends SimpleSwingApplication{
      if (!Game.isWon && !Game.players.isEmpty && Game.players.map(_.cardsInHand.length).sum == 0){
        //all existing cards on deck go to lastCapturer
        Game.lastCapturer.getOrElse(null).capture(Game.cardsOnTable)
+       //calculate point from the round
+       Game.calculatePoints
        //update cardsOnTable
        Game.cardsOnTable = Vector[Card]()
        //reset captured cards
        Game.players.foreach(_.capturedCards = Vector[Card]())
-       //calculate point from the round
-       Game.calculatePoints
        //show points
        Game.players.foreach(n => print("" + n.name + " " +  n.points + " "))
        Game.isWon = true
@@ -83,20 +84,10 @@ object GameGUI extends SimpleSwingApplication{
       g.drawString("Points", 425, 50)
       //Display Icons and corresponding points
       g.setFont(new Font("Serif",Font.BOLD,32))
-//        var offSet = 0
         for(i <- 0 until Game.players.length){
           g.drawImage(Game.players(i).icon.get, 50, 80 + 100*i, 50, 50 ,null)
           g.drawString(Game.players(i).points.toString(), 300, 120 + 100*i)
         }
-//          if (Game.players(0).name == "Computer"){
-//            offSet = 1
-//            g.drawImage(ImageIO.read(new File("robot.png")), 50, 80, 50, 50,null)
-//            g.drawString(Game.players(0).points.toString(),300, 120)
-//          }
-//          for(i <- offSet until Game.players.length){
-//              g.drawImage(ImageIO.read(new File("p"+(i+1-offSet) +".png")), 50, 80 + 100*i, 50,50,null)
-//              g.drawString(Game.players(i).points.toString(),300, 120+100*i)
-//          }
       //Draw sidebar and border
       g.setColor(new Color(30,144,255))
       g.fillRect(575 , 75, 400, 630)
@@ -119,12 +110,12 @@ object GameGUI extends SimpleSwingApplication{
       g.setColor(Color.BLACK)
       g.setFont(new Font("Monospaced",Font.BOLD,22))
       g.drawString("OK", 775, 685) 
-      if(!Game.players.exists(_.points >= 16)){
+      if(!Game.players.exists(_.points >= 4)){
         Game.newRound()
         currentPlayer = Game.players(0)
       }
       else{
-        val winner = Game.players.maxBy(_.points)
+        winner = Game.players.maxBy(_.points).name
         g.drawString("Winner is : " + winner, 595, 645)
       }
      }
@@ -162,18 +153,6 @@ object GameGUI extends SimpleSwingApplication{
           println("gets here")          
           //player Icon
            g.drawImage(currentPlayer.icon.get, 190, 510, 50, 50,null)
-//          var playerIcons = Vector[java.awt.image.BufferedImage]()
-          val currentIndex = Game.players.indexOf(currentPlayer)
-//          for (i <- 0 until Game.players.length) {
-//            if (Game.players(0).name != "Computer")  playerIcons = playerIcons :+ ImageIO.read(new File ("p" + (i+1) + ".png"))
-//            else {
-//              if (i == 0) playerIcons = playerIcons :+ ImageIO.read(new File("robot.png"))
-//              else playerIcons = playerIcons :+ ImageIO.read(new File("p" + i + ".png"))
-//            }
-//              
-//          }
-//          g.drawImage(playerIcons(currentIndex), 190, 510, 50, 50,null)
-
           //Header
           g.setFont(new Font("Serif",java.awt.Font.BOLD,52))
           g.setColor(Color.BLUE)
@@ -210,18 +189,6 @@ object GameGUI extends SimpleSwingApplication{
             g.drawImage(Game.players(i).icon.get, 745, 80 + 50*i, 30, 30, null)
             g.drawString(Game.players(i).points.toString(), 850, 100 + 50*i)
           }
-//          var offSet = 0
-//          if (Game.players(0).name == "Computer"){
-//            offSet = 1
-//            g.drawImage(ImageIO.read(new File("robot.png")), 745, 80, 30, 30,null)
-//            g.drawString(Game.players(0).points.toString(),850, 100)
-//          }
-//          for(i <- offSet until Game.players.length){
-//              g.drawImage(ImageIO.read(new File("p"+(i+1-offSet) +".png")), 745, 80 + 50*i, 30,30,null)
-//              g.drawString(Game.players(i).points.toString(),850, 100+50*i)
-//          }
-          
-        
          //draw cards on the table 
          for(i <- 0 until image.length) {
             if (i < 4) g.drawImage(image(i), 290 + 100*i , 300,90 ,120,null)
@@ -676,6 +643,7 @@ object GameGUI extends SimpleSwingApplication{
                                    
                                  }
                                  else if(any.source == enterNameButton){
+                                    playerNameVec = Vector[String]()
                                     playerNameVec = playerNameVec ++ playerName.map(_.text)
                                     println("Name entered " + playerNameVec)
                                    Game.newGame(compOpponent, playerNameVec)
@@ -689,7 +657,10 @@ object GameGUI extends SimpleSwingApplication{
                                    else{
                                    currentScreen.visible = true
                                    instructionsScreen.visible = false}
-     case e : MouseClicked => println(e)
+     case e : MouseClicked =>  if (Game.isWon && !winner.isEmpty){
+                                   compToggleButton.selected = false
+                               }
+                               println(e)
    }
   }
   
