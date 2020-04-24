@@ -233,23 +233,23 @@ object Game {//extends App {
   def calculatePoints = {
     
     val maxCards = players.zip(players.map(_.capturedCards.length)).maxBy(_._2)
-    println("" + maxCards._1.name + " is given 1 point for max cards")
-    maxCards._1.addPoints(1)
+    println("" + maxCards._1.name + " is given 2 point for max cards")
+    maxCards._1.addPoints(2)
     
     val maxSpades = players.zip(players.map(_.capturedCards.filter(_.suit =="s").length)).maxBy(_._2)
-    println("" + maxSpades._1.name + " is given 1 point for max cards")
+    println("" + maxSpades._1.name + " is given 1 point for max spades")
     maxSpades._1.addPoints(1)
   
     val aces = players.zip(players.map(_.capturedCards.filter(_.value == 1).length))
-    println(aces)
+    println(aces.map(n => (n._1.name, n._2)))
     aces.foreach(n => n._1.addPoints(n._2))
     
-    val d10 = players.zip(players.map(_.capturedCards.filter(_.name == "d10").isEmpty)).filter(_._2 == false)
-    println(d10)
+    val d10 = players.zip(players.map(_.capturedCards.filter(_.name == "d10").isEmpty)).filter(_._2 != false)
+    println("10 of Diamonds goes to : " + d10(0)._1.name)
     if(!d10.isEmpty) d10(0)._1.addPoints(2)
     
-    val s2 = players.zip(players.map(_.capturedCards.filter(_.name == "s2").isEmpty)).filter(_._2 == false)
-    println(s2)
+    val s2 = players.zip(players.map(_.capturedCards.filter(_.name == "s2").isEmpty)).filter(_._2 != false)
+    println("2 of Spades goes to : " + s2(0)._1.name)
     if(!s2.isEmpty) s2(0)._1.addPoints(1)
     
     //capturedCards have to be refreshed for next round
