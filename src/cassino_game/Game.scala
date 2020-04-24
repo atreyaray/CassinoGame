@@ -11,6 +11,7 @@ object Game {//extends App {
   var cardsOnTable = Vector[Card]()
   var lastCapturer : Option[Player] = None
   var isWon = false
+  var currentPlayer = new Player("")
 
   
  var deck = Vector("ha","h2","h3","h4","h5","h6","h7","h8","h9","h10","hj","hq","hk") ++
@@ -29,6 +30,27 @@ object Game {//extends App {
     //add players
     if (comp) this.addPlayers(("Computer" +: playerNames))
     else this.addPlayers(playerNames)
+    var index = 1
+    for (i <- players){
+      if(i.compPlayer) i.icon = Some(javax.imageio.ImageIO.read(new java.io.File("robot.png")))
+      else {
+        i.icon = Some(javax.imageio.ImageIO.read(new java.io.File("p" + index +".png")))
+        index += 1
+      }
+    }
+    shuffle 
+    deal
+    println(this)
+  }
+  
+  def newRound() = {
+    //order of players mixed up
+    players = players.drop(1) :+ players.head
+    cards         = Vector[Card]()
+    cardsOnTable  = Vector[Card]()
+    lastCapturer  = None
+    isWon = false
+    //add players
     shuffle 
     deal
     println(this)
@@ -155,7 +177,7 @@ object Game {//extends App {
       for (i <- 0 until p1.cardsInHand.length){
         //check if move is possible with this combination and this player cards
         if(checkCapture(p1, p1.cardsInHand(i), choice)){
-          println("Now checking " + p1.name + " with " + p1.cardsInHand(i) + " choice " + choice + "\n")
+         // println("Now checking " + p1.name + " with " + p1.cardsInHand(i) + " choice " + choice + "\n")
           //check d10
           if ( (choice :+ p1.cardsInHand(i)).exists(_.name == "d10") ) score += 2
           //check sweep
@@ -165,7 +187,7 @@ object Game {//extends App {
           //check s2
           if ( (choice :+ p1.cardsInHand(i)).exists(_.name == "s2") ) score += 1
           //*********************test**********************
-          println(score)
+          //println(score)
           
           //check score against bestChoice
           if(bestChoice._2.isDefined && score > bestChoice._1)

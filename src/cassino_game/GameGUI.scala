@@ -10,28 +10,6 @@ import javax.swing.SwingUtilities._
 object GameGUI extends SimpleSwingApplication{
   
   
-  
-  
-  val textArea = new TextArea
-  //val image = 
-  def openFile = {
-    val chooser  = new FileChooser
-    if(chooser.showOpenDialog(null)==FileChooser.Result.Approve){
-      val source = scala.io.Source.fromFile(chooser.selectedFile)
-      textArea.text = source.mkString
-      source.close()
-    }
-  }
-  
-  def saveFile = {
-     val chooser  = new FileChooser
-    if(chooser.showSaveDialog(null)==FileChooser.Result.Approve){
-      val pw = new java.io.PrintWriter(chooser.selectedFile)
-      pw.print(textArea.text) 
-      pw.close()
-    }
-  }
-  
   var currentPlayer = new Player("")
   var players = 0 
   val okButton = new Button("OK")
@@ -51,86 +29,120 @@ object GameGUI extends SimpleSwingApplication{
   val instructionMenuItem = new MenuItem("Instructions")
   val newGameMenuItem = new MenuItem("New Game")
   var moveOn = false
-  
-  var topPanel = new FlowPanel{
-                    contents += new Label("Cassino: New Game"){
-                      this.foreground = (Color.BLUE)
-                      font = new java.awt.Font("Serif",java.awt.Font.BOLD,48)
-                     }
-                     this.maximumSize = (new Dimension(1000,100))
-                    // this.background = new Color(181,192,245)
-                     override def paintComponent(g : Graphics2D) ={
-                       val image = ImageIO.read(new File("icon.png"))
-                       g.drawImage(image,730,5,75,75,null)
-                     }
-                    }
-  var bottomPanel = new FlowPanel{
-                     contents += new Label("How many players?")
-                     contents += playerCount
-                     contents += okButton
-                     contents += nameInput(players)       
-                     //size of flowPanel
-                     this.maximumSize = (new Dimension(300,100))
-                    // this.background = new Color(173,230,216)
-                }
-  var middlePanel = new FlowPanel{
-                       contents += new Label("Do you want a computer opponent ?"){
-                         opaque = true
-                        // this.background = new Color(173,230,216)
-                       }
-                       contents += compToggleButton   
-                       //size of flowPanel
-                       this.maximumSize = (new Dimension(300,100))
-                       //this.background = new Color(173,230,216)
-                     }
-  
-
-  
-  
-  //Creates a panel which displays textFields
-  def nameInput(count : Int) = {
-    val panel = new BoxPanel(Orientation.Vertical){
-      for (i <- 0 until count){
-        contents += new BoxPanel(Orientation.Horizontal){
-          //add to playerName
-          playerName = playerName :+ (new TextField())
-          contents += new Label("Enter your name")
-          contents += playerName(i)
-          this.font = new Font("Arial",java.awt.Font.CENTER_BASELINE,12)
-          // background = new Color(173,230,216)
-           this.maximumSize_=(new Dimension(300,30))
-        }
-        this.maximumSize_=(new Dimension(300,200))
-      //   background = new Color(173,230,216)
-      } }
-    panel
-  }
+  var turnChange = false
   
   
 
-    
+  //Window where game is played  
   var gameScreen =  new GamePanel 
   class GamePanel extends Panel{
      //state variable
       visible = false
-    // var playerIcon = ???
      //current selection of cards 
-     var selectedCards = Vector[Card]() 
      var alreadySelected = Vector[Boolean]()
      //only the first card is selected initially
      //card selected from hand of player
      var playerSelection = 0
-     var flag = 0
+     //var flag = 0
     //helper method
      def drawBorder(g : Graphics2D , x : Int, y : Int, i : Int) = {
       g.drawLine(x + 100*i -5  , y - 5      ,x + 100*i + 95, y - 5 )
       g.drawLine(x + 100*i -5  , y - 5 + 130,x + 100*i + 95, y - 5 + 130 )
       g.drawLine(x + 100*i -5  , y - 5      ,x + 100*i - 5 , y - 5 + 130 )
       g.drawLine(x + 100*i + 95, y - 5      ,x + 100*i + 95, y - 5 + 130 )  
-      }
+      } 
+      
+  def checkRound = {  
+     //If game has not been won AND some players exist AND there are 0 cards in any player's hand
+     if (!Game.isWon && !Game.players.isEmpty && Game.players.map(_.cardsInHand.length).sum == 0){
+       //all existing cards on deck go to lastCapturer
+       Game.lastCapturer.getOrElse(null).capture(Game.cardsOnTable)
+       //update cardsOnTable
+       Game.cardsOnTable = Vector[Card]()
+       //reset captured cards
+       Game.players.foreach(_.capturedCards = Vector[Card]())
+       //calculate point from the round
+       Game.calculatePoints
+       //show points
+       Game.players.foreach(n => print("" + n.name + " " +  n.points + " "))
+       Game.isWon = true
+       this.revalidate()
+       this.repaint()
+     }  
+  }   
      
-    //showing the current board  
-     def paintComp(g: Graphics2D, n : Int) = {
+   //showing the current board  
+    def paintComp(g: Graphics2D, n : Int) = {
+     if(Game.isWon){
+      //set background
+      g.setColor(new Color(0,255,0))
+      g.fillRect(0, 0, 1000, 750 )
+      //Points Header
+      g.setColor(Color.BLACK)
+      g.setFont(new Font("Serif",Font.BOLD,48))
+      g.drawString("Points", 425, 50)
+      //Display Icons and corresponding points
+      g.setFont(new Font("Serif",Font.BOLD,32))
+//        var offSet = 0
+        for(i <- 0 until Game.players.length){
+          g.drawImage(Game.players(i).icon.get, 50, 80 + 100*i, 50, 50 ,null)
+          g.drawString(Game.players(i).points.toString(), 300, 120 + 100*i)
+        }
+//          if (Game.players(0).name == "Computer"){
+//            offSet = 1
+//            g.drawImage(ImageIO.read(new File("robot.png")), 50, 80, 50, 50,null)
+//            g.drawString(Game.players(0).points.toString(),300, 120)
+//          }
+//          for(i <- offSet until Game.players.length){
+//              g.drawImage(ImageIO.read(new File("p"+(i+1-offSet) +".png")), 50, 80 + 100*i, 50,50,null)
+//              g.drawString(Game.players(i).points.toString(),300, 120+100*i)
+//          }
+      //Draw sidebar and border
+      g.setColor(new Color(30,144,255))
+      g.fillRect(575 , 75, 400, 630)
+      g.setColor(Color.WHITE)
+      g.drawLine(585, 85, 585, 695)
+      g.drawLine(965, 85, 965, 695)
+      g.drawLine(585, 85, 965, 85)
+      g.drawLine(585, 695, 965, 695)
+      //Draw points distribution
+      g.setFont(new Font("Monospaced",Font.BOLD,15))
+      g.drawString("Maximum Cards Captured : 2 points" , 595, 125)
+      g.drawString("Maximum Spades Captured : 1 points" , 595, 205)
+      g.drawString("Every Ace Captured : 1 points" , 595, 285)
+      g.drawString("Every Sweep : 1 points" , 595, 365)
+      g.drawString("10 of Diamonds : 2 points" , 595, 445)
+      g.drawString("2 of Spades : 1 points" , 595, 525)
+      //Draw ok button
+      g.setColor(Color.WHITE)
+      g.fillRect(750, 665, 75 , 25)
+      g.setColor(Color.BLACK)
+      g.setFont(new Font("Monospaced",Font.BOLD,22))
+      g.drawString("OK", 775, 685) 
+      if(!Game.players.exists(_.points >= 16)){
+        Game.newRound()
+        currentPlayer = Game.players(0)
+      }
+      else{
+        val winner = Game.players.maxBy(_.points)
+        g.drawString("Winner is : " + winner, 595, 645)
+      }
+     }
+     else if(turnChange){
+       g.setColor(new Color(0,255,127))
+       g.fillRect(0, 0, 1000, 750)
+       g.setColor(Color.GRAY)
+       g.fillRect(150, 0, 700, 300)
+       g.setColor(Color.WHITE)
+       g.setFont(new Font("Monospaced", Font.BOLD, 32))
+       g.drawString(currentPlayer.name + "'s turn", 350, 100 )
+       g.setFont(new Font("Monospaced", Font.BOLD, 15))
+       g.setColor(Color.BLACK)
+       g.drawString("Click anywhere to continue", 350,275)
+       
+     }
+     //If round has not ended 
+     else{
          if (alreadySelected.isEmpty) for (i <- 0 until Game.cardsOnTable.length) alreadySelected = alreadySelected :+ (i==0)
          if(Game.cardsOnTable.length != alreadySelected.length){
            alreadySelected = Vector(true)
@@ -140,35 +152,40 @@ object GameGUI extends SimpleSwingApplication{
          println("AlreadySelected Vector : " + alreadySelected)
           
          //background color and window size
-          g.setColor(new Color(73,159,104))
+          g.setColor(new Color(0,255,127))
           g.fillRect(0, 0, 1000, 750)
           g.setBackground( new Color(173,230,216))
           
           //cards on the table and cards with certain player
           val image = Game.cardsOnTable.map(_.image)
           val playerCards = currentPlayer.cardsInHand.map(_.image)
-          
+          println("gets here")          
           //player Icon
-          var playerIcons = Vector[java.awt.image.BufferedImage]()
+           g.drawImage(currentPlayer.icon.get, 190, 510, 50, 50,null)
+//          var playerIcons = Vector[java.awt.image.BufferedImage]()
           val currentIndex = Game.players.indexOf(currentPlayer)
-          for (i <- 0 until Game.players.length) {
-            if (Game.players(0).name != "Computer")  playerIcons = playerIcons :+ ImageIO.read(new File ("p" + (i+1) + ".png"))
-            else {
-              if (i == 0) playerIcons = playerIcons :+ ImageIO.read(new File("robot.png"))
-              else playerIcons = playerIcons :+ ImageIO.read(new File("p" + i + ".png"))
-            }
-              
-          }
-          g.drawImage(playerIcons(currentIndex), 190, 510, 50, 50,null)
-          
+//          for (i <- 0 until Game.players.length) {
+//            if (Game.players(0).name != "Computer")  playerIcons = playerIcons :+ ImageIO.read(new File ("p" + (i+1) + ".png"))
+//            else {
+//              if (i == 0) playerIcons = playerIcons :+ ImageIO.read(new File("robot.png"))
+//              else playerIcons = playerIcons :+ ImageIO.read(new File("p" + i + ".png"))
+//            }
+//              
+//          }
+//          g.drawImage(playerIcons(currentIndex), 190, 510, 50, 50,null)
+
+          //Header
+          g.setFont(new Font("Serif",java.awt.Font.BOLD,52))
+          g.setColor(Color.BLUE)
+          g.drawString("Cassino", 300, 50)
           //player Name
           g.setFont(new Font("Serif",Font.BOLD,15))
           g.setColor(Color.BLACK) 
-          g.drawString("Player " + (currentIndex+1) + " : " + currentPlayer.name, 145, 585)
+          g.drawString("Player " + " :  " + currentPlayer.name, 145, 585)
           
           //capture icon
           g.drawImage(ImageIO.read(new File("captureIcon3.png")), 700,510,50,50, null)
-          g.setColor(Color.CYAN)
+          g.setColor(new Color(30,144,255))
           g.drawRect(755, 520, 95,25 )
           //capture text
           g.setFont(new Font("Monospaced",Font.BOLD,20))
@@ -181,7 +198,7 @@ object GameGUI extends SimpleSwingApplication{
           g.drawString("Trail", 760, 605)
           g.drawRect(755,585,75,25)
           //Scoreboard Panel
-          g.setColor(new Color(12,116,137))
+          g.setColor(new Color(30,144,255))
           g.drawRect( 730 , 10, 250, 400)
           g.setFont(new Font("Monospaced",Font.BOLD,32))
           g.drawString("Score ", 800,50)
@@ -189,16 +206,20 @@ object GameGUI extends SimpleSwingApplication{
           g.setColor(Color.BLACK)
           
          //Points
-          var offSet = 0
-          if (Game.players(0).name == "Computer"){
-            offSet = 1
-            g.drawImage(ImageIO.read(new File("robot.png")), 745, 80, 30, 30,null)
-            g.drawString(Game.players(0).points.toString(),850, 100)
+          for (i <- 0 until Game.players.length){
+            g.drawImage(Game.players(i).icon.get, 745, 80 + 50*i, 30, 30, null)
+            g.drawString(Game.players(i).points.toString(), 850, 100 + 50*i)
           }
-          for(i <- offSet until Game.players.length){
-              g.drawImage(ImageIO.read(new File("p"+(i+1-offSet) +".png")), 745, 80 + 50*i, 30,30,null)
-              g.drawString(Game.players(i).points.toString(),850, 100+50*i)
-          }
+//          var offSet = 0
+//          if (Game.players(0).name == "Computer"){
+//            offSet = 1
+//            g.drawImage(ImageIO.read(new File("robot.png")), 745, 80, 30, 30,null)
+//            g.drawString(Game.players(0).points.toString(),850, 100)
+//          }
+//          for(i <- offSet until Game.players.length){
+//              g.drawImage(ImageIO.read(new File("p"+(i+1-offSet) +".png")), 745, 80 + 50*i, 30,30,null)
+//              g.drawString(Game.players(i).points.toString(),850, 100+50*i)
+//          }
           
         
          //draw cards on the table 
@@ -215,7 +236,6 @@ object GameGUI extends SimpleSwingApplication{
             }
          }
          
-         println("Name  " + (currentPlayer.name== "Computer").toString())
          if (currentPlayer.name == "Computer"){
            //Painting out all the cardbacks 
            for(i <- 0 until currentPlayer.cardsInHand.size){
@@ -229,28 +249,27 @@ object GameGUI extends SimpleSwingApplication{
            println("Current Player name : " + currentPlayer)
            val (card, combo) = Game.optimalMove(currentPlayer)
            if (combo.isDefined){
-           //update selections
-           alreadySelected = Array.fill[Boolean](Game.cardsOnTable.length)(false).toVector
-           for (i <-  combo.get){
-                   //indices to be highlighted
-                    val index = table.filter(i.name == _.name).map(table.indexOf(_))
-                    println("Index " + index)
-                    g.setColor(new Color(139,95,191))
-                    g.setStroke(new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND))                    
-                    if (index(0) > 3)drawBorder(g,290,300,3-index(0))
-                    else drawBorder(g,290,300,index(0))
-                 }
+             //update selections
+             alreadySelected = Array.fill[Boolean](Game.cardsOnTable.length)(false).toVector
+             for (i <-  combo.get){
+                     //indices to be highlighted
+                      val index = table.filter(i.name == _.name).map(table.indexOf(_))
+                      println("Index " + index)
+                      g.setColor(new Color(139,95,191))
+                      g.setStroke(new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND))                    
+                      if (index(0) > 3)drawBorder(g,290,300,3-index(0))
+                      else drawBorder(g,290,300,index(0))
+                   }
            }
-           //card chosen to capture or trail    
-           g.drawImage(card.image, 290, 500,90,120, null)
-           g.setColor(Color.RED)
-           drawBorder(g,290,500,0)
-           Game.dealOne(currentPlayer)
-           currentPlayer = Game.nextPlayer(currentPlayer)
-           moveOn = true
-        }
-         
-        else{
+             //card chosen to capture or trail    
+             g.drawImage(card.image, 290, 500,90,120, null)
+             g.setColor(Color.RED)
+             drawBorder(g,290,500,0)
+             Game.dealOne(currentPlayer)
+             currentPlayer = Game.nextPlayer(currentPlayer)
+             moveOn = true
+         }
+         else{
               //draw player's cards
               for(i <- 0 until currentPlayer.cardsInHand.size){
                 g.drawImage(playerCards(i),290 + 100*i, 500, 90, 120 , null)
@@ -261,36 +280,21 @@ object GameGUI extends SimpleSwingApplication{
                   val x = 290 
                   val y = 500
                   drawBorder(g,x,y,i)
-                }
-          }
-        }
-          
-         if (!Game.isWon && !Game.players.isEmpty && Game.players.map(_.cardsInHand.length).sum == 0){
-            //all existing cards on deck go to lastCapturer
-            Game.lastCapturer.getOrElse(null).capture(Game.cardsOnTable)
-            //update cardsOnTable
-            Game.cardsOnTable = Vector[Card]()
-            //calculate point from the round
-            Game.calculatePoints
-            //show points
-            Game.players.foreach(n => print("" + n.name + " " +  n.points + " "))
-            Game.isWon = true
-            this.revalidate()
-            this.repaint()
-         }  
+                 }
+               }
+         }
       }
-      
-        
-     
-      override def paintComponent(g : Graphics2D) ={
+    }
+   override def paintComponent(g : Graphics2D) ={
           paintComp(g,playerSelection)
-      }
+   }
 //       println(this)
      this.listenTo(this.mouse.clicks,this.mouse.moves)
      this.reactions += {
        //when mouse is clicked
         case e : MouseClicked =>
-          if (moveOn){
+          if (moveOn || turnChange){
+            turnChange = false
             moveOn = false
             this.repaint()
           }
@@ -414,21 +418,37 @@ object GameGUI extends SimpleSwingApplication{
                     println("Hello it's working again")
                 }
             }
+          
+          
+           //TRAIL button is clicked
            else if (e.point.x > 700 && e.point.x <832 && e.point.y > 570 && e.point.y < 622){
              println("Trail clicked!")
              println("Current Player : " + currentPlayer)
              println("Player Selection : "+ playerSelection  )
             // Call the trail method
              Game.trail(currentPlayer, currentPlayer.cardsInHand(playerSelection))
-             Game.dealOne(currentPlayer)
              println(Game.toString())
-             //update currentPlayer
-             currentPlayer = Game.nextPlayer(currentPlayer)
-             println("Next Player = " + currentPlayer)
-             //repaint()
-             this.revalidate()
-             this.repaint()
+             //checkIfWon
+             checkRound
+             if (!Game.isWon){  
+               //deal another card
+               Game.dealOne(currentPlayer)
+               //update currentPlayer
+               currentPlayer = Game.nextPlayer(currentPlayer)
+               println("Next Player = " + currentPlayer)
+               //change of turn
+               turnChange = true
+               //repaint()
+               this.revalidate()
+               this.repaint()
+             }
+             else{
+               moveOn = true
+             }
            }
+          
+          
+           //CAPTURE button is clicked
            else if (e.point.x > 700 && e.point.x <832 && e.point.y > 515 && e.point.y < 560){
              println("Capture clicked!")
              //gather data
@@ -436,11 +456,21 @@ object GameGUI extends SimpleSwingApplication{
              val combo = alreadySelected.zip(Game.cardsOnTable).filter(_._1).map(_._2)
              //checkcapture
              if (Game.checkCapture(currentPlayer, pCard, combo)){
+               //lastCapturer updated
                Game.lastCapturer = Some(currentPlayer)
+               //capture executed
                Game.executeCapture(currentPlayer, pCard, combo)
-               Game.dealOne(currentPlayer)
+               checkRound
+               //currentPlayer is dealt one card and play moves on only if round and game aren't over
+               if (!Game.isWon){  
+                 Game.dealOne(currentPlayer)
+                 currentPlayer = Game.nextPlayer(currentPlayer)
+                 turnChange = true
+               }
+               else{
+                 moveOn = true
+               }
                println(Game.toString())
-               currentPlayer = Game.nextPlayer(currentPlayer)
              }
              else {
                println("Player's choice : " + pCard)
@@ -454,11 +484,11 @@ object GameGUI extends SimpleSwingApplication{
              this.repaint()
              //repaint
            }
+          
+          
             else println(e.point)
      }
-        
-
-  
+      
   }
   
   var instructionsScreen = new BoxPanel(Orientation.Vertical){
@@ -466,15 +496,28 @@ object GameGUI extends SimpleSwingApplication{
                       contents+= new Label("Instructions Page"){
                                       font = new Font("Roman",Font.BOLD,48)
                                       opaque = true
-                                      foreground = new Color(98,207,125)
+                                      foreground = Color.WHITE
                                       background = new Color(173,216,230)
                                   }
                       background = new Color(173,216,230)
                 }
-    contents += new FlowPanel{
-                   contents += new TextArea(){
+    contents += new ScrollPane(){
+                   contents = new TextArea("\n\nThe deck is shuffled in the beginning of every round and the dealer deals 4 cards to every player" 
+         +" (they are not visible to other players) and 4 cards on the table (visible for everyone). The rest of the cards are left on the table upside down."  
+         + "The player next to the dealer starts the game. On the next round he/she is the dealer.\n\n\n"
+         + "What every player does on their turn: \n\n"
+         + "1. A player can play out one of his/her cards: it can be used either for taking cards from the table or to just putting it on the table. If the player cannot take anything from the table, he/she must put one of his/her cards on the table.\n\n"
+         + "2. If the player takes cards from the table, he/she puts them in a separate pile of his/her own. The pile is used to count the points after the round has ended.\n\n"
+         + "3. The number of cards on the table can vary. For example, if someone takes all the cards from the table, the next player must put a card on the empty table.\n\n"
+         + "4. Player must draw a new card from the deck after using a card so that he/she has always 4 cards in his/her hand. (When the deck runs out, everyone plays until there are no cards left in any player’s hand).\n\n"
+         + "5. Player can use a card to take one or more cards of the same value and cards such that their summed value is equal to the used card.\n\n"
+         ){
+                                    minimumSize = new Dimension(900,500) 
+                                    charWrap = true
+                                    wordWrap = true
+                                    lineWrap = true
                                     editable = false
-                                    font = new Font("Serif",Font.BOLD,24)
+                                    font = new Font("Serif",Font.BOLD,18)
                                     background = new Color(173,216,230)
                                     foreground  = Color.WHITE
                                 }
@@ -487,17 +530,72 @@ object GameGUI extends SimpleSwingApplication{
     visible = false 
   }
   
+  
+  var topPanel = new FlowPanel{
+                    contents += new Label("Cassino: New Game"){
+                      this.foreground = (Color.BLUE)
+                      font = new Font("Serif",java.awt.Font.BOLD,48)
+                     }
+                     this.maximumSize = (new Dimension(1000,100))
+                    // this.background = new Color(181,192,245)
+                     override def paintComponent(g : Graphics2D) ={
+                       val image = ImageIO.read(new File("icon.png"))
+                       g.drawImage(image,730,5,75,75,null)
+                     }
+                    }
+  var bottomPanel = new FlowPanel{
+                     contents += new Label("How many players?")
+                     contents += playerCount
+                     contents += okButton
+                     contents += nameInput(players)       
+                     //size of flowPanel
+                     this.maximumSize = (new Dimension(300,100))
+                    background = new Color(0,255,127)
+                }
+  var middlePanel = new FlowPanel{
+                       contents += new Label("Do you want a computer opponent ?"){
+                         opaque = true
+                         background = new Color(0,255,127)
+                       }
+                       contents += compToggleButton   
+                       //size of flowPanel
+                       this.maximumSize = (new Dimension(300,100))
+                       background = new Color(0,255,127)
+                     }
+  
+  
+  //Creates a panel which displays textFields
+  def nameInput(count : Int) = {
+    val panel = new BoxPanel(Orientation.Vertical){
+      for (i <- 0 until count){
+        contents += new BoxPanel(Orientation.Horizontal){
+          //add to playerName
+          playerName = playerName :+ (new TextField())
+          contents += new Label("Enter your name")
+          contents += playerName(i)
+          this.font = new Font("Arial",java.awt.Font.CENTER_BASELINE,12)
+          background = new Color(0,255,127)
+           this.maximumSize_=(new Dimension(300,30))
+        }
+        this.maximumSize_=(new Dimension(300,200))
+        background = new Color(0,255,127)
+      } }
+    panel
+  }
+  
   //Initital screen
   var currentScreen = new BoxPanel(Orientation.Vertical){
    
       playerFieldPanel  = new BoxPanel(Orientation.Vertical){
       contents += new TextField("Alone? Here with your gang?"){
+         font = new Font("Monospaced", Font.BOLD, 24)
          horizontalAlignment = Alignment.Center
          this.editable = false
          this.maximumSize_=(new Dimension(1000,300))
-      //   this.background = new Color(173,230,216)
+         background = new Color(0,255,127)
       }
     }
+    background = new Color(0,255,127)
     //Header : "Cassino: New Game"
     contents += topPanel
     //Flow Panel for input
@@ -528,18 +626,13 @@ object GameGUI extends SimpleSwingApplication{
                                     println(e)
                                     compOpponent = compToggleButton.selected
                                   }
-         case e: MouseMoved => println(e)
-         
+         case e: MouseMoved => println(e)        
      }
 
    
   }
   
-  
-//      override def paintComponent(g: Graphics2D) ={
-//       val image = javax.imageio.ImageIO.read(new File("1C.png"))
-//       g.drawImage(image, 250,250, 70,100,null )
-//      }
+
   
   
   
@@ -547,7 +640,7 @@ object GameGUI extends SimpleSwingApplication{
    contents += currentScreen
    contents += instructionsScreen
    contents += gameScreen
-   
+   background = new Color(0,255,127)
     this.listenTo(instructionMenuItem)
     this.listenTo(newGameMenuItem)
     this.listenTo(enterNameButton)
@@ -583,23 +676,62 @@ object GameGUI extends SimpleSwingApplication{
                                    instructionsScreen.visible = false}
      case e : MouseClicked => println(e)
    }
- }
+  }
   
   
   
+  //Loads text file and starts a new game
+  def openFile = {
+    val chooser  = new FileChooser
+    //If option is clicked
+    if(chooser.showOpenDialog(null)==FileChooser.Result.Approve){
+      //Updating game state variables
+      Game.fileHandler.loadGame(chooser.selectedFile.getName)
+      //updating current player
+      currentPlayer = Game.players.filter(_.name == Game.currentPlayer.name)(0)
+      //assign Icons 
+      var tempPlayer = currentPlayer
+      var index = 1
+      do{
+        if (tempPlayer.compPlayer) tempPlayer.icon = Some(ImageIO.read(new File("robot.png")))
+        else {
+          tempPlayer.icon = Some(ImageIO.read(new File("p"+ index + ".png")))
+          index += 1
+        }
+        tempPlayer = Game.nextPlayer(tempPlayer)
+      }while(tempPlayer.name != currentPlayer.name)
+      println(currentPlayer)
+      //front page is made invisible
+      currentScreen.visible = false
+      //instruction screen is made invisible
+      instructionsScreen.visible = false
+      //game screen is made visible
+      gameScreen.visible = true
+      gameScreen.repaint()
+    }
+  }
   
+  //saves file into a text File
+  def saveFile = {
+     val chooser  = new FileChooser
+    if(chooser.showSaveDialog(null)==FileChooser.Result.Approve){
+      Game.currentPlayer = currentPlayer
+      Game.fileHandler.saveGame(chooser.selectedFile.getName)
+    }
+  }
   
-  
-  
-    def menu = {
+  //menu bar
+  def menu = {
     new MenuBar{
       contents += new Menu("New Game"){
         contents += newGameMenuItem
       }
       contents += new Menu("Settings"){
+         //Opening and Loading a text file
          contents += new MenuItem(Action("Open"){
            openFile
          })
+         //saving game into a textFile
          contents += new MenuItem(Action("Save"){
            saveFile
          })
@@ -621,6 +753,7 @@ object GameGUI extends SimpleSwingApplication{
     menuBar = menu
     contents =  finalFrame
     size = new Dimension(1000,750)
+    background = new Color(127,255,0)
     centerOnScreen
   }
   top.visible = true

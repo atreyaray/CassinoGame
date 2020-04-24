@@ -7,6 +7,7 @@ class Player (givenName : String){
   var capturedCards = Vector[Card]()
   var cardsInHand = Vector[Card]()
   val compPlayer : Boolean = givenName.take(4) == "Comp" 
+  var icon : Option[java.awt.image.BufferedImage] = None
   
   def addPoints (addition : Int) = points += addition
   def capture (cards : Vector[Card]) = capturedCards = capturedCards ++ cards

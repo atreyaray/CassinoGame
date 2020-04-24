@@ -34,7 +34,7 @@ class FileHandler {
     val lastCapturer = if(Game.lastCapturer.isDefined) Game.lastCapturer.get.name else "NONE"
     val cardsInDeck = Game.cards.map(_.name).foldLeft("")((m,n)=>m+n+":")
     writer.write("###\nMETADATA\nNUMBEROFPLAYERS "+ Game.players.length + "\nROUNDNUMMBER "+ 1 + "\nNOOFCARDSREMAINING " + Game.cardsOnTable.length
-                  + "\nCARDSONTABLE " + cardsOnTable + "\nCARDSINDECK " + cardsInDeck  +"\nLASTCAPTURER " + lastCapturer + "\n\n")
+                  + "\nCARDSONTABLE " + cardsOnTable + "\nCARDSINDECK " + cardsInDeck  +"\nLASTCAPTURER " + lastCapturer + "\nCURRENTPLAYER " + Game.currentPlayer.name +"\n\n")
      
     //Block 3-N: Player Data
     for (i <- Game.players){
@@ -79,14 +79,14 @@ class FileHandler {
         case "CARDSINDECK" => Game.cards = Vector[Card]()
                                if(metaBlocks.length > 1 )  metaBlocks(1).split(":").toArray.foreach(n => Game.cards= Game.cards :+ new Card(n) )
         case "LASTCAPTURER" => Game.lastCapturer =  if(metaBlocks(1) =="NONE") None else Some(new Player(metaBlocks(1)))
+        case "CURRENTPLAYER" => Game.currentPlayer = new Player(metaBlocks(1))
         case other =>                                
       }
     }
-    
+     Game.players = Vector[Player]()
     //initializing game data
     for (i <- playerdata){
       //
-      Game.players = Vector[Player]()
       var name = ""
       var score = 0 
       var hand = Vector[Card]()
@@ -110,6 +110,8 @@ class FileHandler {
       newPlayer.capturedCards = capturedCards
       println("New Player " + newPlayer)
       Game.players = Game.players :+ newPlayer
+      println("Game players " + Game.players.map(_.name))
     }
+    println("Game :" + Game.toString())
   }
 }

@@ -1,0 +1,44 @@
+###
+CASSINO GAME
+v1.0
+Thu Apr 16 01:29:29 EEST 2020
+
+###
+METADATA
+NUMBEROFPLAYERS 4
+ROUNDNUMMBER 1
+NOOFCARDSREMAINING 1
+CARDSONTABLE c7:
+CARDSINDECK h8:s7:c3:c4:c2:hj:d10:s10:c9:cq:dj:s3:s6:ca:c5:sa:s2:s9:d9:dk:ck:h9:ha:h6:h3:d2:d4:d3:h7:d8:sk:
+LASTCAPTURER Atreya
+
+###
+PLR
+NAME Comp
+SCORE 0
+HAND c10:h5:d7:
+CAPTUREDCARDS s5:d6:sj:
+
+###
+PLR
+NAME Atreya
+SCORE 0
+HAND d5:h4:cj:s4:
+CAPTUREDCARDS s8:c8:
+
+###
+PLR
+NAME Long
+SCORE 0
+HAND dq:hk:h2:da:
+CAPTUREDCARDS 
+
+###
+PLR
+NAME Aayush
+SCORE 0
+HAND hq:h10:c6:sq:
+CAPTUREDCARDS 
+
+###
+EOF
