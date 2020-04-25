@@ -137,13 +137,13 @@ object GameGUI extends SimpleSwingApplication{
      }
      //If round has not ended 
      else{
+       println("Checkpoint 1")
          if (alreadySelected.isEmpty) for (i <- 0 until Game.cardsOnTable.length) alreadySelected = alreadySelected :+ (i==0)
          if(Game.cardsOnTable.length != alreadySelected.length){
            alreadySelected = Vector(true)
            for (i <- 0 until Game.cardsOnTable.length -1)  alreadySelected = alreadySelected :+ false
          }
          if (!Game.players.isEmpty && currentPlayer.name == "Computer") alreadySelected = Array.fill[Boolean](Game.cardsOnTable.length)(false).toVector
-         println("AlreadySelected Vector : " + alreadySelected)
           
          //background color and window size
           g.setColor(new Color(0,100,0))
@@ -166,8 +166,7 @@ object GameGUI extends SimpleSwingApplication{
           
           //cards on the table and cards with certain player
           val image = Game.cardsOnTable.map(_.image)
-          val playerCards = currentPlayer.cardsInHand.map(_.image)
-          println("gets here")          
+          val playerCards = currentPlayer.cardsInHand.map(_.image)         
           //player Icon
            g.drawImage(currentPlayer.icon.get, 190, 510, 50, 50,null)
           //Header
@@ -180,15 +179,17 @@ object GameGUI extends SimpleSwingApplication{
           g.drawString("Player " + " :  " + currentPlayer.name, 145, 585)
           
           //capture icon
-          g.drawImage(ImageIO.read(new File("captureIcon3.png")), 700,510,50,50, null)
+          g.drawImage(ImageIO.read(new File("./ImageResources/captureIcon3.png")), 700,510,50,50, null)
           g.setColor(new Color(173,216,230))
           g.drawRect(755, 520, 95,25 )
+          println("Checkpoint 2")
           //capture text
           g.setFont(new Font("Monospaced",Font.BOLD,20))
           g.drawString("Capture",760,540)
          //trail icon
-          g.drawImage(ImageIO.read(new File("trailIcon.png")), 700, 570, 50,50, null )
-         //trail text
+          g.drawImage(ImageIO.read(new File("./ImageResources/trailIcon.png")), 700, 570, 50,50, null )
+         println("Checkpoint 3")
+          //trail text
           g.setColor(new Color(238,46,49))
           g.setFont(new Font("Monospaced",Font.BOLD,20))
           g.drawString("Trail", 760, 605)
@@ -223,13 +224,13 @@ object GameGUI extends SimpleSwingApplication{
          if (currentPlayer.name == "Computer"){
            //Painting out all the cardbacks 
            for(i <- 0 until currentPlayer.cardsInHand.size){
-               val cardImage = ImageIO.read(new File("cardBack.png"))
+               val cardImage = ImageIO.read(new File("./ImageResources/cardBack.png"))
                g.drawImage(cardImage,290 + 100*i, 500, 90, 120 , null) 
              }
+           println("Checkpoint 4")
            //save cards on the table
            val table = Game.cardsOnTable
            //checkMove
-           println("Executed now")
            println("Current Player name : " + currentPlayer)
            val (card, combo) = Game.optimalMove(currentPlayer)
            if (combo.isDefined){
@@ -238,7 +239,6 @@ object GameGUI extends SimpleSwingApplication{
              for (i <-  combo.get){
                      //indices to be highlighted
                       val index = table.filter(i.name == _.name).map(table.indexOf(_))
-                      println("Index " + index)
                       g.setColor(new Color(139,95,191))
                       g.setStroke(new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND))                    
                       if (index(0) > 3)drawBorder(g,290,300,3-index(0))
@@ -272,7 +272,6 @@ object GameGUI extends SimpleSwingApplication{
    override def paintComponent(g : Graphics2D) ={
           paintComp(g,playerSelection)
    }
-//       println(this)
      this.listenTo(this.mouse.clicks,this.mouse.moves)
      this.reactions += {
        //when mouse is clicked
@@ -291,7 +290,6 @@ object GameGUI extends SimpleSwingApplication{
                 //draw selection
                 this.revalidate()
                 this.repaint()
-                println("Hello it's working")
             }
           }   
          // second card clicked, draw selection
@@ -303,7 +301,6 @@ object GameGUI extends SimpleSwingApplication{
                     //draw selection
                     this.revalidate()
                     this.repaint()
-                    println("Hello it's working again")
                 }
              }
               else if(e.point.x >= 490 && e.point.x < 580 && e.point.y > 500 && e.point.y < 620){
@@ -314,7 +311,6 @@ object GameGUI extends SimpleSwingApplication{
                     //draw selection1
                     this.revalidate()
                     this.repaint()
-                    println("Hello it's working again")
                 }
             }
              else if(e.point.x >= 590 && e.point.x < 680 && e.point.y > 500 && e.point.y < 620){
@@ -325,7 +321,6 @@ object GameGUI extends SimpleSwingApplication{
                     //draw selection
                     this.revalidate()
                     this.repaint()
-                    println("Hello it's working again")
                 }
             }
           
@@ -339,7 +334,6 @@ object GameGUI extends SimpleSwingApplication{
                     //draw selection1
                     this.revalidate()
                     this.repaint()
-                    println("Hello it's working again")
                 }
             } 
            else if(e.point.x >= 390 && e.point.x < 480 && e.point.y > 300 && e.point.y < 420){
@@ -351,7 +345,6 @@ object GameGUI extends SimpleSwingApplication{
                     //draw selection1
                     this.revalidate()
                     this.repaint()
-                    println("Hello it's working again")
                 }
             }
            else if(e.point.x >= 490 && e.point.x < 580 && e.point.y > 300 && e.point.y < 420){
@@ -363,7 +356,6 @@ object GameGUI extends SimpleSwingApplication{
                     //draw selection1
                     this.revalidate()
                     this.repaint()
-                    println("Hello it's working again")
                 }
             } 
            else if(e.point.x >= 590 && e.point.x < 680 && e.point.y > 300 && e.point.y < 420){
@@ -375,7 +367,6 @@ object GameGUI extends SimpleSwingApplication{
                     //draw selection1
                     this.revalidate()
                     this.repaint()
-                    println("Hello it's working again")
                 }
             }
            else if(e.point.x >= 190 && e.point.x < 280 && e.point.y > 300 && e.point.y < 420){
@@ -387,7 +378,6 @@ object GameGUI extends SimpleSwingApplication{
                     //draw selection1
                     this.revalidate()
                     this.repaint()
-                    println("Hello it's working again")
                 }
             }
            else if(e.point.x >= 90 && e.point.x < 180 && e.point.y > 300 && e.point.y < 420){
@@ -399,7 +389,6 @@ object GameGUI extends SimpleSwingApplication{
                     //draw selection1
                     this.revalidate()
                     this.repaint()
-                    println("Hello it's working again")
                 }
             }
           
@@ -546,7 +535,7 @@ object GameGUI extends SimpleSwingApplication{
                      this.maximumSize = (new Dimension(1000,100))
                     // this.background = new Color(181,192,245)
                      override def paintComponent(g : Graphics2D) ={
-                       val image = ImageIO.read(new File("icon.png"))
+                       val image = ImageIO.read(new File("./ImageResources/icon.png"))
                        g.drawImage(image,730,5,75,75,null)
                      }
                     }
@@ -625,13 +614,15 @@ object GameGUI extends SimpleSwingApplication{
     this.reactions += {
          case e : ButtonClicked =>if (e.source == okButton){
                                     players = playerCount.selection.item.toString().toInt
-                                     println(Game.players)
-                                     playerFieldPanel.contents.clear()
-                                     playerFields = nameInput(players)
-                                     playerFieldPanel.contents += playerFields
-                                     this.contents += enterNameButton
-                                     this.revalidate()
-                                     this.repaint()
+                                    if (!compOpponent && players == 1){}
+                                    else{
+                                       playerFieldPanel.contents.clear()
+                                       playerFields = nameInput(players)
+                                       playerFieldPanel.contents += playerFields
+                                       this.contents += enterNameButton
+                                       this.revalidate()
+                                       this.repaint()
+                                    }
                                   }
 
                                   else {
@@ -675,6 +666,7 @@ object GameGUI extends SimpleSwingApplication{
                                    gameScreen.visible = false
                                    instructionsScreen.visible = false
                                    currentScreen.visible = true
+                                   print(Game.toString())
                                    
                                  }
                                 //All the names are entered
@@ -682,18 +674,16 @@ object GameGUI extends SimpleSwingApplication{
                                     //reset the vector containing names
                                     playerNameVec = Vector[String]()
                                     playerNameVec = playerNameVec ++ playerName.map(_.text)
-                                    println("Name entered " + playerNameVec)
                                     //new Game with given input data
-                                   Game.newGame(compOpponent, playerNameVec)
-                                   //set currentPlayer
-                                   currentPlayer = Game.players(0)
-                                   println("Game players " + Game.players)
-                                   //switching screens
-                                   currentScreen.visible = false
-                                   gameScreen.visible = true
-                                   //repaint
-                                   gameScreen.revalidate()
-                                   gameScreen.repaint()
+                                    Game.newGame(compOpponent, playerNameVec)
+                                    //set currentPlayer
+                                    currentPlayer = Game.players(0)
+                                    //switching screens
+                                    currentScreen.visible = false
+                                    gameScreen.visible = true
+                                    //repaint
+                                    gameScreen.revalidate()
+                                    gameScreen.repaint()
                                   }
                                    else{
                                    if(Game.players.isEmpty) currentScreen.visible = true
@@ -721,9 +711,12 @@ object GameGUI extends SimpleSwingApplication{
       var tempPlayer = currentPlayer
       var index = 1
       do{
-        if (tempPlayer.compPlayer) tempPlayer.icon = Some(ImageIO.read(new File("robot.png")))
+        if (tempPlayer.compPlayer) {
+          tempPlayer.icon = Some(ImageIO.read(new File("./ImageResources/robot.png")))
+            println("Checkpoint 6")
+        }
         else {
-          tempPlayer.icon = Some(ImageIO.read(new File("p"+ index + ".png")))
+          tempPlayer.icon = Some(ImageIO.read(new File("./ImageResources/p"+ index + ".png")))
           index += 1
         }
         tempPlayer = Game.nextPlayer(tempPlayer)

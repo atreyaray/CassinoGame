@@ -14,7 +14,7 @@ class Card (givenName:String) {
     case other => givenName.drop(1).toInt
   }
   
- val image = read(new File(name+".png"))
+ val image = read(new File("./ImageResources/" + name+".png"))
 ///////////////////////////////////////////
 //Only certain cards get special values  //
 //  Aces:        14 in hand, 1 on table  //

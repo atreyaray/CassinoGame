@@ -21,6 +21,7 @@ object Game {//extends App {
  
  //initializes a new game
  def newGame (comp : Boolean, playerNames : Vector[String]) = {
+    println("Let's start")
     //state variables refreshed
     players       = Vector[Player]()
     cards         = Vector[Card]()
@@ -32,15 +33,17 @@ object Game {//extends App {
     else this.addPlayers(playerNames)
     var index = 1
     for (i <- players){
-      if(i.compPlayer) i.icon = Some(javax.imageio.ImageIO.read(new java.io.File("robot.png")))
+      if(i.compPlayer) i.icon = Some(javax.imageio.ImageIO.read(new java.io.File("./ImageResources/robot.png")))
       else {
-        i.icon = Some(javax.imageio.ImageIO.read(new java.io.File("p" + index +".png")))
+        i.icon = Some(javax.imageio.ImageIO.read(new java.io.File("./ImageResources/p" + index +".png")))
         index += 1
       }
     }
+    println("Let's go")
     shuffle 
     deal
-    println(this)
+    println("Let's end")
+    println(this.toString())
   }
   
   def newRound() = {
@@ -61,7 +64,11 @@ object Game {//extends App {
    //testing seed = 12
     val rand = new util.Random(randomInt)
     deck = rand.shuffle(deck)
-    for (i <- 0 until deck.length) cards = cards :+ new Card(deck(i))
+    for (i <- 0 until deck.length){
+      println(i)
+      println(deck(i))
+      cards = cards :+ new Card(deck(i))
+    }
   }
   
   // Adds new players 

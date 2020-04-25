@@ -24,11 +24,11 @@ object GuiApp extends SimpleSwingApplication {
         var offSet = 0
           if (Game.players(0).name == "Computer"){
             offSet = 1
-            g.drawImage(ImageIO.read(new File("robot.png")), 50, 80, 50, 50,null)
+            g.drawImage(ImageIO.read(new File("./ImageResources/robot.png")), 50, 80, 50, 50,null)
             g.drawString(Game.players(0).points.toString(),300, 120)
           }
           for(i <- offSet until Game.players.length){
-              g.drawImage(ImageIO.read(new File("p"+(i+1-offSet) +".png")), 50, 80 + 100*i, 50,50,null)
+              g.drawImage(ImageIO.read(new File("./ImageResources/p"+(i+1-offSet) +".png")), 50, 80 + 100*i, 50,50,null)
               g.drawString(Game.players(i).points.toString(),300, 120+100*i)
           }
       g.setColor(new Color(30,144,255))
@@ -52,6 +52,8 @@ object GuiApp extends SimpleSwingApplication {
       g.setColor(Color.BLACK)
       g.setFont(new Font("Monospaced",Font.BOLD,22))
       g.drawString("OK", 775, 685)
+      val cards = Vector("h5","s3","ck","dq").map(new Card(_)).map(_.image)
+      cards.foreach(g.drawImage(_, 100, 100, 90, 120, null))
       }
   }
   
