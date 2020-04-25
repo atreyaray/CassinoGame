@@ -57,7 +57,9 @@ object Game {//extends App {
   }
  // Creates shuffled deck (Vector) of Cards class          
  def shuffle = {
-    val rand = new util.Random(12)
+   val randomInt = util.Random.nextInt()
+   //testing seed = 12
+    val rand = new util.Random(randomInt)
     deck = rand.shuffle(deck)
     for (i <- 0 until deck.length) cards = cards :+ new Card(deck(i))
   }

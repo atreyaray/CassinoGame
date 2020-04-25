@@ -31,6 +31,7 @@ object GameGUI extends SimpleSwingApplication{
   var moveOn = false
   var turnChange = false
   var winner = ""
+  var panelString = "Click on Capture or Trail to make a move"
   
   
 
@@ -76,27 +77,29 @@ object GameGUI extends SimpleSwingApplication{
     def paintComp(g: Graphics2D, n : Int) = {
      if(Game.isWon){
       //set background
-      g.setColor(new Color(0,255,0))
+      g.setColor(new Color(0,100,0))
       g.fillRect(0, 0, 1000, 750 )
       //Points Header
-      g.setColor(Color.BLACK)
+      g.setColor(new Color(240,230,140))
       g.setFont(new Font("Serif",Font.BOLD,48))
       g.drawString("Points", 425, 50)
       //Display Icons and corresponding points
+      g.setColor(new Color(230,230,250))
       g.setFont(new Font("Serif",Font.BOLD,32))
         for(i <- 0 until Game.players.length){
           g.drawImage(Game.players(i).icon.get, 50, 80 + 100*i, 50, 50 ,null)
           g.drawString(Game.players(i).points.toString(), 300, 120 + 100*i)
         }
       //Draw sidebar and border
-      g.setColor(new Color(30,144,255))
+      g.setColor(new Color(143,188,143))
       g.fillRect(575 , 75, 400, 630)
-      g.setColor(Color.WHITE)
+      g.setColor(new Color(0,100,0))
       g.drawLine(585, 85, 585, 695)
       g.drawLine(965, 85, 965, 695)
       g.drawLine(585, 85, 965, 85)
       g.drawLine(585, 695, 965, 695)
       //Draw points distribution
+      g.setColor(Color.WHITE)
       g.setFont(new Font("Monospaced",Font.BOLD,15))
       g.drawString("Maximum Cards Captured : 2 points" , 595, 125)
       g.drawString("Maximum Spades Captured : 1 points" , 595, 205)
@@ -110,7 +113,7 @@ object GameGUI extends SimpleSwingApplication{
       g.setColor(Color.BLACK)
       g.setFont(new Font("Monospaced",Font.BOLD,22))
       g.drawString("OK", 775, 685) 
-      if(!Game.players.exists(_.points >= 4)){
+      if(!Game.players.exists(_.points >= 16)){
         Game.newRound()
         currentPlayer = Game.players(0)
       }
@@ -120,9 +123,9 @@ object GameGUI extends SimpleSwingApplication{
       }
      }
      else if(turnChange){
-       g.setColor(new Color(0,255,127))
+       g.setColor(new Color(0,100,0))
        g.fillRect(0, 0, 1000, 750)
-       g.setColor(Color.GRAY)
+       g.setColor(new Color(143,188,143))
        g.fillRect(150, 0, 700, 300)
        g.setColor(Color.WHITE)
        g.setFont(new Font("Monospaced", Font.BOLD, 32))
@@ -143,9 +146,23 @@ object GameGUI extends SimpleSwingApplication{
          println("AlreadySelected Vector : " + alreadySelected)
           
          //background color and window size
-          g.setColor(new Color(0,255,127))
+          g.setColor(new Color(0,100,0))
           g.fillRect(0, 0, 1000, 750)
           g.setBackground( new Color(173,230,216))
+          
+          //textBox
+          g.setColor(new Color(143,188,143))
+          g.fillRect(60, 80, 625, 150)
+          g.setColor(new Color(0,100,0))
+          g.drawLine(70, 90, 70, 220)
+          g.drawLine(675, 90, 675, 220)
+          g.drawLine(70, 90, 675, 90)
+          g.drawLine(70, 220, 675, 220)
+          
+          //text on the textbox
+          g.setColor(Color.WHITE)
+          g.setFont(new Font("Monospaced",Font.BOLD, 18))
+          g.drawString(panelString, 130, 170)
           
           //cards on the table and cards with certain player
           val image = Game.cardsOnTable.map(_.image)
@@ -155,16 +172,16 @@ object GameGUI extends SimpleSwingApplication{
            g.drawImage(currentPlayer.icon.get, 190, 510, 50, 50,null)
           //Header
           g.setFont(new Font("Serif",java.awt.Font.BOLD,52))
-          g.setColor(Color.BLUE)
+          g.setColor(new Color(240,230,140))
           g.drawString("Cassino", 300, 50)
           //player Name
           g.setFont(new Font("Serif",Font.BOLD,15))
-          g.setColor(Color.BLACK) 
+          g.setColor(Color.WHITE) 
           g.drawString("Player " + " :  " + currentPlayer.name, 145, 585)
           
           //capture icon
           g.drawImage(ImageIO.read(new File("captureIcon3.png")), 700,510,50,50, null)
-          g.setColor(new Color(30,144,255))
+          g.setColor(new Color(173,216,230))
           g.drawRect(755, 520, 95,25 )
           //capture text
           g.setFont(new Font("Monospaced",Font.BOLD,20))
@@ -177,14 +194,14 @@ object GameGUI extends SimpleSwingApplication{
           g.drawString("Trail", 760, 605)
           g.drawRect(755,585,75,25)
           //Scoreboard Panel
-          g.setColor(new Color(30,144,255))
+          g.setColor(Color.WHITE)
           g.drawRect( 730 , 10, 250, 400)
           g.setFont(new Font("Monospaced",Font.BOLD,32))
           g.drawString("Score ", 800,50)
           g.setFont(new Font("Monospaced",Font.BOLD,15))
-          g.setColor(Color.BLACK)
           
          //Points
+           g.setColor(Color.WHITE)
           for (i <- 0 until Game.players.length){
             g.drawImage(Game.players(i).icon.get, 745, 80 + 50*i, 30, 30, null)
             g.drawString(Game.players(i).points.toString(), 850, 100 + 50*i)
@@ -194,7 +211,7 @@ object GameGUI extends SimpleSwingApplication{
             if (i < 4) g.drawImage(image(i), 290 + 100*i , 300,90 ,120,null)
             else g.drawImage(image(i), 290 + 100*(3-i) , 300,90 ,120,null)
             if (alreadySelected(i)){
-              g.setColor(new Color(139,95,191))
+              g.setColor(new Color(143,188,143))
               g.setStroke(new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND))
               val x = 290
               val y = 300
@@ -395,6 +412,7 @@ object GameGUI extends SimpleSwingApplication{
             // Call the trail method
              Game.trail(currentPlayer, currentPlayer.cardsInHand(playerSelection))
              println(Game.toString())
+             panelString = "Click on Capture or Trail to make a move"
              //checkIfWon
              checkRound
              if (!Game.isWon){  
@@ -423,6 +441,8 @@ object GameGUI extends SimpleSwingApplication{
              val combo = alreadySelected.zip(Game.cardsOnTable).filter(_._1).map(_._2)
              //checkcapture
              if (Game.checkCapture(currentPlayer, pCard, combo)){
+               if(combo.length == Game.cardsOnTable.length) panelString = "Nice! Sweep for " + currentPlayer.name
+               else panelString = "Click on Capture or Trail to make a move"
                //lastCapturer updated
                Game.lastCapturer = Some(currentPlayer)
                //capture executed
@@ -440,6 +460,7 @@ object GameGUI extends SimpleSwingApplication{
                println(Game.toString())
              }
              else {
+               panelString = "Move failed, try another ?"
                println("Player's choice : " + pCard)
                println("Card from table : " + combo)
                println("Condition for move was : " + Game.checkCapture(currentPlayer, pCard, combo))
@@ -453,7 +474,11 @@ object GameGUI extends SimpleSwingApplication{
            }
           
           
-            else println(e.point)
+            else {
+              panelString = "Oops! Click wasn't on the buttons."
+              println(e.point)
+              this.repaint()
+            }
      }
       
   }
@@ -463,10 +488,10 @@ object GameGUI extends SimpleSwingApplication{
                       contents+= new Label("Instructions Page"){
                                       font = new Font("Roman",Font.BOLD,48)
                                       opaque = true
-                                      foreground = Color.BLACK
-                                      background = new Color(0,255,127)
+                                      foreground = new Color(240,230,140)
+                                      background = new Color(0,100,0)
                                   }
-                      background = new Color(0,255,127)
+                      background = new Color(0,100,0)
                 }
     contents += new ScrollPane(){
                    contents = new TextArea("\n\nThe deck is shuffled in the beginning of every round and the dealer deals 4 cards to every player" 
@@ -499,23 +524,23 @@ object GameGUI extends SimpleSwingApplication{
                                     lineWrap = true
                                     editable = false
                                     font = new Font("Serif",Font.BOLD,18)
-                                    background = new Color(0,255,127)
-                                    foreground  = Color.BLACK
+                                    background = new Color(0,100,0)
+                                    foreground  = new Color(230,230,250)
                                 }
-                   background = new Color(0,255,127)
+                   background = new Color(0,100,0)
                 }
     contents += new FlowPanel{
                       contents += instructionButton
-                      background = new Color(0,255,127)
+                      background = new Color(0,100,0)
                 }
-    background = new Color(0,255,127)
+    background = new Color(0,100,0)
     visible = false 
   }
   
   
   var topPanel = new FlowPanel{
                     contents += new Label("Cassino: New Game"){
-                      this.foreground = (Color.BLUE)
+                      this.foreground = (new Color(240,230,140))
                       font = new Font("Serif",java.awt.Font.BOLD,48)
                      }
                      this.maximumSize = (new Dimension(1000,100))
@@ -526,23 +551,26 @@ object GameGUI extends SimpleSwingApplication{
                      }
                     }
   var bottomPanel = new FlowPanel{
-                     contents += new Label("How many players?")
+                     contents += new Label("How many players?"){
+                       foreground = Color.WHITE
+                     }
                      contents += playerCount
                      contents += okButton
                      contents += nameInput(players)       
                      //size of flowPanel
                      this.maximumSize = (new Dimension(300,100))
-                    background = new Color(0,255,127)
+                    background = new Color(0,100,0)
                 }
   var middlePanel = new FlowPanel{
                        contents += new Label("Do you want a computer opponent ?"){
                          opaque = true
-                         background = new Color(0,255,127)
+                         background = new Color(0,100,0)
+                         foreground = Color.WHITE
                        }
                        contents += compToggleButton   
                        //size of flowPanel
                        this.maximumSize = (new Dimension(300,100))
-                       background = new Color(0,255,127)
+                       background = new Color(0,100,0)
                      }
   
   
@@ -553,14 +581,16 @@ object GameGUI extends SimpleSwingApplication{
         contents += new BoxPanel(Orientation.Horizontal){
           //add to playerName
           playerName = playerName :+ (new TextField())
-          contents += new Label("Enter your name")
+          contents += new Label("Enter your name"){
+            foreground = new Color(230,230,250)
+          }
           contents += playerName(i)
           this.font = new Font("Arial",java.awt.Font.CENTER_BASELINE,12)
-          background = new Color(0,255,127)
+          background = new Color(0,100,0)
            this.maximumSize_=(new Dimension(300,30))
         }
         this.maximumSize_=(new Dimension(300,200))
-        background = new Color(0,255,127)
+        background = new Color(0,100,0)
       } }
     panel
   }
@@ -574,10 +604,10 @@ object GameGUI extends SimpleSwingApplication{
          horizontalAlignment = Alignment.Center
          this.editable = false
          this.maximumSize_=(new Dimension(1000,300))
-         background = new Color(0,255,127)
+         background = new Color(0,100,0)
       }
     }
-    background = new Color(0,255,127)
+    background = new Color(0,100,0)
     //Header : "Cassino: New Game"
     contents += topPanel
     //Flow Panel for input
@@ -622,7 +652,7 @@ object GameGUI extends SimpleSwingApplication{
    contents += currentScreen
    contents += instructionsScreen
    contents += gameScreen
-   background = new Color(0,255,127)
+   background = new Color(0,100,0)
     this.listenTo(instructionMenuItem)
     this.listenTo(newGameMenuItem)
     this.listenTo(enterNameButton)
