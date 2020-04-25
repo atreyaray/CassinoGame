@@ -8,13 +8,14 @@ import java.util.Calendar
 class FileHandler {
   
   //reads a file and returns the chunks of data 
-  def readFile (textFile : String) : Array[Array[String]]= {
+  def readFile (textFile : File) : Array[Array[String]]= {
     io.Source.fromFile(textFile).mkString.split("###").map(_.trim()).map(_.split('\n'))
   }
   
-  def saveGame(textFile : String ) = {
+  def saveGame(textFile : File ) = {
     
-    val file = new File("textFile")
+   // val file = new File("textFile")
+    val file = textFile
     file.delete()
 
     //file writers
@@ -51,7 +52,7 @@ class FileHandler {
     fileWriter.close()
   }
   
-  def loadGame (textFile : String) = {
+  def loadGame (textFile : File) = {
     //all the read data
     val blocks = this.readFile(textFile)
     

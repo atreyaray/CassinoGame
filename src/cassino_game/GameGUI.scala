@@ -24,7 +24,7 @@ object GameGUI extends SimpleSwingApplication{
   val playerCount  = new ComboBox(Vector(1,2,3,4,5,6))
   var playerName = Vector[TextField]()
   var playerNameVec = Vector[String]()
-  val compToggleButton = new ToggleButton("Yes")
+  val compToggleButton = new ToggleButton("No")
   var compOpponent = false
   val instructionMenuItem = new MenuItem("Instructions")
   val newGameMenuItem = new MenuItem("New Game")
@@ -637,6 +637,9 @@ object GameGUI extends SimpleSwingApplication{
                                   else {
                                     println(e)
                                     compOpponent = compToggleButton.selected
+                                    //update toggle button
+                                    if (compToggleButton.selected) compToggleButton.text = "Yes"
+                                    else compToggleButton.text = "No"
                                   }
          case e: MouseMoved => println(e)        
      }
@@ -659,11 +662,13 @@ object GameGUI extends SimpleSwingApplication{
     this.listenTo(instructionButton)
    // this.listenTo(gameScreen)
     this.reactions+= {
-     case any : ButtonClicked => if(any.source == instructionMenuItem){  
+     case any : ButtonClicked => //when "instructions" is clicked under the heading  
+                                if(any.source == instructionMenuItem){
                                    currentScreen.visible = false
                                    gameScreen.visible = false
-                                  
-                                   instructionsScreen.visible = true}
+                                   instructionsScreen.visible = true
+                                 }
+                                //"New Game" is pressed inside the menu bar
                                  else if(any.source == newGameMenuItem){
                                    Game.newGame(false, Vector())
                                    playerNameVec = Vector[String]()
@@ -672,20 +677,27 @@ object GameGUI extends SimpleSwingApplication{
                                    currentScreen.visible = true
                                    
                                  }
+                                //All the names are entered
                                  else if(any.source == enterNameButton){
+                                    //reset the vector containing names
                                     playerNameVec = Vector[String]()
                                     playerNameVec = playerNameVec ++ playerName.map(_.text)
                                     println("Name entered " + playerNameVec)
+                                    //new Game with given input data
                                    Game.newGame(compOpponent, playerNameVec)
-                                   currentScreen.visible = false
-                                   println("Game players " + Game.players)
+                                   //set currentPlayer
                                    currentPlayer = Game.players(0)
+                                   println("Game players " + Game.players)
+                                   //switching screens
+                                   currentScreen.visible = false
                                    gameScreen.visible = true
+                                   //repaint
                                    gameScreen.revalidate()
                                    gameScreen.repaint()
                                   }
                                    else{
-                                   currentScreen.visible = true
+                                   if(Game.players.isEmpty) currentScreen.visible = true
+                                   else gameScreen.visible = true
                                    instructionsScreen.visible = false}
      case e : MouseClicked =>  if (Game.isWon && !winner.isEmpty){
                                    compToggleButton.selected = false
@@ -702,7 +714,7 @@ object GameGUI extends SimpleSwingApplication{
     //If option is clicked
     if(chooser.showOpenDialog(null)==FileChooser.Result.Approve){
       //Updating game state variables
-      Game.fileHandler.loadGame(chooser.selectedFile.getName)
+      Game.fileHandler.loadGame(chooser.selectedFile)
       //updating current player
       currentPlayer = Game.players.filter(_.name == Game.currentPlayer.name)(0)
       //assign Icons 
@@ -732,7 +744,7 @@ object GameGUI extends SimpleSwingApplication{
      val chooser  = new FileChooser
     if(chooser.showSaveDialog(null)==FileChooser.Result.Approve){
       Game.currentPlayer = currentPlayer
-      Game.fileHandler.saveGame(chooser.selectedFile.getName)
+      Game.fileHandler.saveGame(chooser.selectedFile)
     }
   }
   
@@ -771,6 +783,7 @@ object GameGUI extends SimpleSwingApplication{
     size = new Dimension(1000,750)
     background = new Color(127,255,0)
     centerOnScreen
+    resizable = false
   }
   top.visible = true
    
