@@ -1,9 +1,12 @@
-package cassino_game
+package gui
 
 import scala.swing._
-import java.awt.{Color,Font}
+import java.awt.{Color, Font}
 import java.io.File
 import javax.imageio.ImageIO
+import cassino_game.Card
+import cassino_game.Game
+import scala.Vector
 
 object GuiApp extends SimpleSwingApplication {
   

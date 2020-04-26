@@ -1,9 +1,11 @@
-package cassino_game
+package gui
+
 import scala.swing._
 import scala.swing.event._
 import java.io._
 import java.awt.{Font,Color,BasicStroke}
 import javax.imageio._
+import cassino_game._
 
 object GameScreenGUI extends Panel{
      //state variable

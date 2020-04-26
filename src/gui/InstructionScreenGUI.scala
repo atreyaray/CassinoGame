@@ -1,4 +1,4 @@
-package cassino_game
+package gui
 
 import scala.swing._
 import java.awt.{Font,Color}

@@ -1,4 +1,4 @@
-package cassino_game
+package gui
 
 import scala.swing._
 import scala.swing.event._
@@ -6,6 +6,8 @@ import java.io._
 import java.awt.{Color,Font,Graphics2D,BasicStroke}
 import javax.imageio.ImageIO
 import javax.swing.SwingUtilities._
+import cassino_game._
+
 
 object GameGUI extends SimpleSwingApplication{
   

@@ -1,10 +1,11 @@
-package cassino_game
+package gui
 
 import scala.swing._
 import scala.swing.event._
 import java.io._
 import javax.imageio._
-import java.awt.{Font,Color}
+import java.awt.{Font, Color}
+import scala.Vector
 
 object CurrentScreenGUI extends BoxPanel(Orientation.Vertical){
   
