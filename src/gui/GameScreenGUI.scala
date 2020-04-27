@@ -201,7 +201,6 @@ object GameScreenGUI extends Panel{
            //save cards on the table
            val table = Game.cardsOnTable
            //checkMove
-           println("Current Player name : " + GameGUI.currentPlayer)
            val (card, combo) = Game.optimalMove(GameGUI.currentPlayer)
            if (combo.isDefined){
              //update selections
@@ -365,12 +364,8 @@ object GameScreenGUI extends Panel{
           
            //TRAIL button is clicked
            else if (e.point.x > 700 && e.point.x <832 && e.point.y > 570 && e.point.y < 622){
-             println("Trail clicked!")
-             println("Current Player : " + GameGUI.currentPlayer)
-             println("Player Selection : "+ playerSelection  )
             // Call the trail method
              Game.trail(GameGUI.currentPlayer, GameGUI.currentPlayer.cardsInHand(playerSelection))
-             println(Game.toString())
              panelString = "Click on Capture or Trail to make a move"
              //checkIfWon
              checkRound
@@ -379,7 +374,6 @@ object GameScreenGUI extends Panel{
                Game.dealOne(GameGUI.currentPlayer)
                //update GameGUI.currentPlayer
                GameGUI.currentPlayer = Game.nextPlayer(GameGUI.currentPlayer)
-               println("Next Player = " + GameGUI.currentPlayer)
                //change of turn
                turnChange = true
                //repaint()
@@ -394,7 +388,6 @@ object GameScreenGUI extends Panel{
           
            //CAPTURE button is clicked
            else if (e.point.x > 700 && e.point.x <832 && e.point.y > 515 && e.point.y < 560){
-             println("Capture clicked!")
              //gather data
              val pCard = GameGUI.currentPlayer.cardsInHand(playerSelection)
              val combo = alreadySelected.zip(Game.cardsOnTable).filter(_._1).map(_._2)
@@ -416,14 +409,9 @@ object GameScreenGUI extends Panel{
                else{
                  moveOn = true
                }
-               println(Game.toString())
              }
              else {
                panelString = "Move failed, try another ?"
-               println("Player's choice : " + pCard)
-               println("Card from table : " + combo)
-               println("Condition for move was : " + Game.checkCapture(GameGUI.currentPlayer, pCard, combo))
-               println("Move failed!")
              }
              //execute capture or failed, 
              //if successful update GameGUI.currentPlayer
@@ -435,7 +423,6 @@ object GameScreenGUI extends Panel{
           
             else {
               panelString = "Oops! Click wasn't on the buttons."
-              println(e.point)
               this.repaint()
             }
      }

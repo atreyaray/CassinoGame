@@ -109,10 +109,7 @@ class FileHandler {
       newPlayer.points = score
       newPlayer.cardsInHand = hand
       newPlayer.capturedCards = capturedCards
-      println("New Player " + newPlayer)
       Game.players = Game.players :+ newPlayer
-      println("Game players " + Game.players.map(_.name))
     }
-    println("Game :" + Game.toString())
   }
 }

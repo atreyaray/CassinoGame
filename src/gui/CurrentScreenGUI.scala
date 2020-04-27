@@ -121,8 +121,7 @@ object CurrentScreenGUI extends BoxPanel(Orientation.Vertical){
                                     //update toggle button
                                     if (compToggleButton.selected) compToggleButton.text = "Yes"
                                     else compToggleButton.text = "No"
-                                  }
-         case e: MouseMoved => println(e)        
+                                  }       
      }
 
 }
