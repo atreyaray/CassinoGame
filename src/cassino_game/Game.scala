@@ -60,8 +60,8 @@ object Game {//extends App {
    val randomInt = util.Random.nextInt()
    //testing seed = 12
     val rand = new util.Random(randomInt)
-    deck = rand.shuffle(deck)
-    for (i <- 0 until deck.length) cards = cards :+ new Card(deck(i))
+    val randDeck = rand.shuffle(deck)
+    for (i <- 0 until deck.length) cards = cards :+ new Card(randDeck(i))
   }
   
   // Adds new players 
@@ -103,9 +103,6 @@ object Game {//extends App {
   
   //checks if move is possible
   def checkCapture (p1 : Player, playerCard : Card, combo : Vector[Card]) : Boolean = {
-//    val comboVal = combo.map(_.value).reduceLeft((n,sum) => n+sum)
-//    val playerVal = playerCard.specialValue.getOrElse(playerCard.value)
-//    (comboVal % playerVal == 0) && (combo.forall(_.value <= playerCard.specialValue.getOrElse(playerCard.value) ))
     
     //return value
     var ans = false
@@ -131,8 +128,6 @@ object Game {//extends App {
         for (j <- i+1 until choicesBuf.length){
           //checking every combination of 2 member groups if they have distinct elements
           if ( (choicesBuf(i)&choicesBuf(j)).size == 0 ){
-            println("Choice 1 " + choicesBuf(i))
-            println("Choice 2 " + choicesBuf(j))
             ans = true
           }
         }
@@ -188,9 +183,6 @@ object Game {//extends App {
           if ( (choice :+ p1.cardsInHand(i)).exists(_.value == 1) ) score +=  (choice :+ p1.cardsInHand(i)).filter(_.value == 1).length
           //check s2
           if ( (choice :+ p1.cardsInHand(i)).exists(_.name == "s2") ) score += 1
-          //*********************test**********************
-          //println(score)
-          
           //check score against bestChoice
           if(bestChoice._2.isDefined && score > bestChoice._1)
             bestChoice = (score, Some(choice :+ p1.cardsInHand(i)))
@@ -201,17 +193,14 @@ object Game {//extends App {
           else {
             if (bestChoice._1 == 0 && choice.length +1 > bestChoice._2.size ) bestChoice = (0,Some(choice :+ p1.cardsInHand(i)))
           }
-          println("Best Choice uptill now  " + bestChoice._2)
         }
         //if the move is not possible then move on
       } 
    }
-      println("Best Choice is : " + bestChoice)
       //if there is a bestChoice then execute it else trail
       if (bestChoice._2.isDefined) {
         this.executeCapture(p1, bestChoice._2.get.last , bestChoice._2.get.dropRight(1))
         // returns (card captured, Some(combo))
-        println("ENTERS HERE TOO " +bestChoice._1 + ":" + bestChoice._2)
         return (bestChoice._2.get.last , Some(bestChoice._2.get.dropRight(1)))
       }
       else{

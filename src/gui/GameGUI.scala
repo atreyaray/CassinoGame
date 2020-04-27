@@ -42,6 +42,7 @@ object GameGUI extends SimpleSwingApplication{
                                    InstructionScreenGUI.visible = false
                                    CurrentScreenGUI.visible = true
                                    print(Game.toString())
+                                   println("Game ended")
                                    
                                  }
                                 //All the names are entered
@@ -49,6 +50,7 @@ object GameGUI extends SimpleSwingApplication{
                                     //reset the vector containing names
                                     playerNameVec = Vector[String]()
                                     playerNameVec = playerNameVec ++ CurrentScreenGUI.playerName.map(_.text)
+                                    playerNameVec = playerNameVec.filterNot(_.isEmpty())
                                     //new Game with given input data
                                     Game.newGame(CurrentScreenGUI.compOpponent, playerNameVec)
                                     //set currentPlayer
