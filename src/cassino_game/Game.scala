@@ -42,6 +42,7 @@ object Game {//extends App {
     deal
   }
   
+  
   def newRound() = {
     //order of players mixed up
     players = players.drop(1) :+ players.head
