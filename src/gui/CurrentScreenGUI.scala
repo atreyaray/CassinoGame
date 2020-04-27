@@ -116,7 +116,6 @@ object CurrentScreenGUI extends BoxPanel(Orientation.Vertical){
                                   }
 
                                   else {
-                                    println(e)
                                     compOpponent = compToggleButton.selected
                                     //update toggle button
                                     if (compToggleButton.selected) compToggleButton.text = "Yes"
