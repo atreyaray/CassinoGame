@@ -245,7 +245,7 @@ object GameScreenGUI extends Panel{
      this.listenTo(this.mouse.clicks,this.mouse.moves)
      this.reactions += {
        //when mouse is clicked
-        case e : MouseClicked =>
+        case e : MousePressed =>
           if (moveOn || turnChange){
             turnChange = false
             moveOn = false
