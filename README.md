@@ -49,7 +49,14 @@ For a regular player’s turn, the player may click on any card from their own h
   <img src="https://github.com/atreyaray/CassinoGame/blob/master/Documentation/images/GamePlay_4.png"  width="500"/> 
  
   The instructions page can be accessed through a drop-down in the menu bar. Clicking on it takes the user to a separate page.
+  
+  <img src="https://github.com/atreyaray/CassinoGame/blob/master/Documentation/images/InstructionsPage.png"  width="500"/> 
+  
 The instructions are given in text format and the user may scroll down to read the entirety of the text. After reading, the instructions, clicking on the “Got It” button will take the user back.
+
+  <img src="https://github.com/atreyaray/CassinoGame/blob/master/Documentation/images/SavingFiles.png"  width="500"/> 
  
  The data of a particular game may be saved in a .txt file and the same file may be loaded at a later time to allow continuity of the game. The “Open” and “Save” buttons inside the “Settings” dropdown open FileChoosers which allow users to do the same.
 Apart from that, the “New Game” option in the menu bar creates a new game whenever clicked.
+
+  <img src="https://github.com/atreyaray/CassinoGame/blob/master/Documentation/images/UML.png"  width="500"/> 
