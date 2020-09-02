@@ -3,6 +3,20 @@
 
 Cassino, a fishing card game, played by drawing cards and matching them with those on the deck with similar value or symbols. Made with Scala, using graphics from ScalaFX and tested with ScalaTest.
 
+### Getting Started:
+Copy the URL for this repository : (https://github.com/atreyaray/CassinoGame)
+
+In Eclipse, File -> import -> Git -> Projects from Git -> next in Eclipse
+
+Clone URI -> finish
+
+Follow the recommended settings
+
+### Requirements
+Java SE Development Kit 8 (JDK8) (https://www.oracle.com/java/technologies/javase-jdk8-downloads.html)
+
+Eclipse Scala IDE: http://scala-ide.org/download/sdk.html)
+
 ### General Description :
 Cassino
 The goal of the project was to make the Cassino (deck-cassino) card game with a fully functioning graphical user interface. The rules are as follows:
