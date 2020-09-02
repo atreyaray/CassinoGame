@@ -3,7 +3,7 @@
 
 Cassino, a fishing card game, played by drawing cards and matching them with those on the deck with similar value or symbols. Made with Scala, using graphics from ScalaFX and tested with ScalaTest.
 
-General Description :
+### General Description :
 Cassino
 The goal of the project was to make the Cassino (deck-cassino) card game with a fully functioning graphical user interface. The rules are as follows:
 - The deck is shuffled at the beginning of every round and the dealer deals 4 cards to every player (they are not visible to other players) and 4 cards on the table (visible for everyone). The rest of the cards are left on the table upside down. The player next to the dealer starts the game. In the next round, he/she is the dealer.
@@ -20,3 +20,22 @@ Scores are calculated when every player runs out of cards and the last player to
 - The player with Diamonds-10 gets 2 points.
 - The player with Spades-2 gets 1 point.
 At any point in time, the game state can be saved onto a file and also retrieved from a file using a custom file format.
+
+
+### User Interface ​:
+The program can be run through a graphical user interface (GUI) which can be run through the GameGUI.scala file. Upon running, the GUI presents the first page where the user may choose a computer opponent and the number of human opponents.
+After selecting whether or not to have a computer opponent with the help of the toggle button and choosing the number of human opponents with a drop-down list, when the “OK” button is pressed, multiple text fields appear to allow inputs for the name of players.
+ 
+  The names of all the opponents can then be entered and then the “Next” button may be pressed. After this, a new page appears which contains the game window.
+ 
+ The game window is where the entirety of the game runs. There are “Capture” and “Trail” buttons on the bottom right which may be clicked to execute those respective moves. The player’s icon, name and hand are displayed on the bottom. In the centre, the cards on the table, visible to all the players, are shown. The right side contains the Score panel where the score of each player is given besides their corresponding icon. On the right of the panel, there is a text box which gives some helpful tips about the gameplay.
+During the computer’s turn, the GUI displays the move that the computer opponent makes. This involves having one card from the hand being visible, along with the selection to capture from the table (if any). The user may click anywhere on the window to proceed to the next turn.
+For a regular player’s turn, the player may click on any card from their own hand along with one or more cards from those available on the table to execute a capture. After selecting the required collection of cards, the “Capture” button must be clicked. An invalid capture move is not allowed and prompts a suggestion on the text box above
+ 
+  On the other hand, a “Trail” move is always valid and can be executed by the player by first selecting the card in their hand that they want to trail and subsequently pressing the Trail button. Upon the successful execution of a “Capture” or “Trail” move, a new window pops up, informing the players of the change of turn, thereby allowing privacy and hiding the hand of individual players.
+ 
+  The instructions page can be accessed through a drop-down in the menu bar. Clicking on it takes the user to a separate page.
+The instructions are given in text format and the user may scroll down to read the entirety of the text. After reading, the instructions, clicking on the “Got It” button will take the user back.
+ 
+ The data of a particular game may be saved in a .txt file and the same file may be loaded at a later time to allow continuity of the game. The “Open” and “Save” buttons inside the “Settings” dropdown open FileChoosers which allow users to do the same.
+Apart from that, the “New Game” option in the menu bar creates a new game whenever clicked.
