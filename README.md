@@ -1,5 +1,6 @@
 # CassinoGame
 (excerpts from the documentation file)
+
 Cassino, a fishing card game, played by drawing cards and matching them with those on the deck with similar value or symbols. Made with Scala, using graphics from ScalaFX and tested with ScalaTest.
 
 General Description :
