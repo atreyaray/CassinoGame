@@ -32,6 +32,8 @@ After selecting whether or not to have a computer opponent with the help of the 
 <img src="https://github.com/atreyaray/CassinoGame/blob/master/Documentation/images/FrontPage_3.png"  width="300"/> 
  
 The names of all the opponents can then be entered and then the “Next” button may be pressed. After this, a new page appears which contains the game window.
+
+ <img src="https://github.com/atreyaray/CassinoGame/blob/master/Documentation/images/GamePlay_1.png"  width="300"/> 
  
  The game window is where the entirety of the game runs. There are “Capture” and “Trail” buttons on the bottom right which may be clicked to execute those respective moves. The player’s icon, name and hand are displayed on the bottom. In the centre, the cards on the table, visible to all the players, are shown. The right side contains the Score panel where the score of each player is given besides their corresponding icon. On the right of the panel, there is a text box which gives some helpful tips about the gameplay.
 During the computer’s turn, the GUI displays the move that the computer opponent makes. This involves having one card from the hand being visible, along with the selection to capture from the table (if any). The user may click anywhere on the window to proceed to the next turn.
