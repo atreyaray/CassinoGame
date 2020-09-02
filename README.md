@@ -59,4 +59,4 @@ The instructions are given in text format and the user may scroll down to read t
  The data of a particular game may be saved in a .txt file and the same file may be loaded at a later time to allow continuity of the game. The “Open” and “Save” buttons inside the “Settings” dropdown open FileChoosers which allow users to do the same.
 Apart from that, the “New Game” option in the menu bar creates a new game whenever clicked.
 
-  <img src="https://github.com/atreyaray/CassinoGame/blob/master/Documentation/images/UML.png"  width="500"/> 
+  <img src="https://github.com/atreyaray/CassinoGame/blob/master/Documentation/images/UML.png"  width="1000"/> 
